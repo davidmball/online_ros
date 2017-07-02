@@ -71,10 +71,9 @@ var socket = io.listen(server);
 app.post('/compile', function(req, res)
 {
     console.log("Writing code.");
-    files['chatter.cpp'] = req.body.code;
     fs.writeFileSync('/home/david/catkin_ws/src/topics/CMakeLists.txt', files['CMakeLists.txt']);
     fs.writeFileSync('/home/david/catkin_ws/src/topics/package.xml', files['package.xml']);
-    fs.writeFileSync('/home/david/catkin_ws/src/topics/src/chatter.cpp', files['chatter.cpp']);
+    fs.writeFileSync('/home/david/catkin_ws/src/topics/src/chatter.cpp', req.body.code_files['chatter.cpp']);
 
     console.log("Compiling code.");
     var spawn = require('child_process').spawn;

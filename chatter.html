@@ -27,24 +27,10 @@
 
   <h1>{{example_title}}</h1>
 
-  <div class="tab">
-    <button class="tablinks" onclick="openFile(event, 'package.xml')">package.xml</button>
-    <button class="tablinks" onclick="openFile(event, 'CMakeLists.txt')">CMakeLists.txt</button>
-    <button class="tablinks" onclick="openFile(event, 'chatter.cpp')" id="defaultOpen">chatter.cpp</button>
-  </div>
+  <select name="files" id="file_list" size="3" onchange="file_list_select();"></select>
 
-  <div id="package.xml" class="tabcontent">
-    <textarea id="package_xml">{{package_xml}}</textarea>
-  </div>
-
-  <div id="CMakeLists.txt" class="tabcontent">
-    <textarea id="CMakeLists.txt">{{cmakelists_txt}}</textarea>
-  </div>
-
-  <div id="chatter.cpp" class="tabcontent">
-    <pre id="editor"></pre>
-  </div>
-    <input type="button" value="Compile" id="compile">
+  <div id="editor"></div>
+      <input type="button" value="Compile" id="compile">
 </div>
 
 <div style="float: right; width: 50%" class="feedback">
@@ -115,24 +101,58 @@ $(document).ready(function(){
 });
 
 var files = {};
-   var editor = ace.edit("editor");
+var editor = ace.edit("editor");
+editor.setTheme("ace/theme/chrome");
+var EditSession = ace.require("ace/edit_session").EditSession;
+var editor_sessions = {};
+
 $.get("/get_files", function (data) {
    files = JSON.parse(data);
-
-   editor.setTheme("ace/theme/chrome");
-   editor.getSession().setMode("ace/mode/c_cpp");
-   editor.setValue(files['chatter.cpp'], -1);
+   var sel = document.getElementById('file_list');
+   for (var filename in files)
+   {
+     var opt = document.createElement('option');
+     opt.innerHTML = filename;
+     opt.value = filename;
+     sel.appendChild(opt);
+     var filename_extension = filename.split('.').pop();
+     editor_sessions[filename] = new EditSession(filename);
+     if (filename_extension == 'cpp' || filename_extension == 'c')
+          editor_sessions[filename].setMode("ace/mode/c_cpp");
+     else if (filename_extension == 'xml')
+          editor_sessions[filename].setMode("ace/mode/xml");
+     else
+          editor_sessions[filename].setMode("ace/mode/text");
+     editor_sessions[filename].setValue(files[filename], -1);
+   }
+   editor.setSession(editor_sessions['chatter.cpp']);
 });
 
-
+function file_list_select() {
+  var sel = document.getElementById("file_list");
+  var sel_val = sel.options[sel.selectedIndex].value;
+  editor.setSession(editor_sessions[sel_val]);
+  if (sel_val == 'CMakeLists.txt' || sel_val == 'package.xml')
+  {
+    editor.setReadOnly(true);
+  } else {
+    editor.setReadOnly(false);
+  }
+}
 
 
 $('#compile').on('click', function() {
   document.getElementById("show_compile").value = '';
   document.getElementById("show_topic").value = '';
-  var codeFile = editor.getValue();
+
+  var code = {};
+  for (var filename in editor_sessions)
+  {
+    code[filename] = editor_sessions[filename].getValue();
+  }
+//  var codeFile = editor.getValue();
   var json = {
-    code: codeFile,
+    code_files: code,
   };
 
   $.post("/compile", json, function(data, error, xhr) {
@@ -141,29 +161,6 @@ $('#compile').on('click', function() {
 });
 
 
-
-function openFile(evt, fileName) {
-    // Declare all variables
-    var i, tabcontent, tablinks;
-
-    // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(fileName).style.display = "block";
-    evt.currentTarget.className += " active";
-}
-
-document.getElementById("defaultOpen").click();
 </script>
 
   </body>
