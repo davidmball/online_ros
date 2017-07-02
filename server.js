@@ -1,24 +1,24 @@
-var http = require('http');
-var fs = require('fs');
-var express = require('express');
-var path = require('path')
-var io   = require('socket.io')(http);
-var dir = require('node-dir');
-var bodyParser = require('body-parser');
+const http = require('http');
+const fs = require('fs');
+const express = require('express');
+const path = require('path')
+const io   = require('socket.io')(http);
+const dir = require('node-dir');
+const bodyParser = require('body-parser');
+const crypto = require("crypto");
 
 var app = express();
 app.use(express.static('public'));
-var jsonParser = bodyParser.json()
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 var example_name = 'chatter';
 var files = {};
-var path = '/home/david/ros_tutorials_ws/src/topics/';
+var example_path = '/home/david/ros_examples/src/topics/';
 
 
 
-dir.readFiles(path,
+dir.readFiles(example_path,
     function(err, content, filename, next) {
         if (err)
             throw err;
@@ -68,7 +68,7 @@ var server = app.listen(8080, function () {
 var socket = io.listen(server);
 
 
-app.post('/compile', urlencodedParser, function(req, res)
+app.post('/compile', function(req, res)
 {
     console.log("Writing code.");
     files['chatter.cpp'] = req.body.code;
@@ -79,7 +79,9 @@ app.post('/compile', urlencodedParser, function(req, res)
     console.log("Compiling code.");
     var spawn = require('child_process').spawn;
     var command = './run_docker.sh'
-    var args = ['10', 'fred', 'ros_workspace_rosbridge', '/home/david/catkin_ws/src'];
+    var docker_id = crypto.randomBytes(16).toString("hex");
+    var net_id = crypto.randomBytes(16).toString("hex");
+    var args = ['10', docker_id, 'ros_workspace_rosbridge', '/home/david/catkin_ws/src', net_id];
     var ls = spawn(command, args);
 
     ls.stdout.on('data', (data) => {
@@ -95,6 +97,6 @@ app.post('/compile', urlencodedParser, function(req, res)
 
     ls.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
+      res.end('true');
     });
-
 });

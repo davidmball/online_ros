@@ -62,15 +62,18 @@ var roslib_connected = false;
  function try_ros_connection() {
    if (roslib_connected == false)
    {
-     ros.connect('ws://172.18.0.22:9090');
+     ros.connect('ws://localhost:9090');
    }
  }
 
- var interval = setInterval(try_ros_connection, 1000);
+ var interval_active = true;
+ var interval = setInterval(try_ros_connection, 2000);
+
 
  ros.on('connection', function() {
    roslib_connected = true;
    console.log('Connected to websocket server.');
+   interval_active = false;
    clearInterval(interval);
    var listener = new ROSLIB.Topic({
      ros : ros,
@@ -93,7 +96,12 @@ var roslib_connected = false;
 
  ros.on('close', function() {
    console.log('Connection to websocket server closed.');
-   interval = setInterval(try_ros_connection, 1000);
+   roslib_connected = false;
+   if (!interval_active)
+   {
+      interval_active = true;
+      interval = setInterval(try_ros_connection, 1000);
+   }
  });
 
 
