@@ -1,7 +1,8 @@
 {
   "name": "byworkingexample",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.5",
+  "private": true,
+  "description": "Online code compilers",
   "main": "server.js",
   "directories": {
     "example": "examples"
@@ -9,12 +10,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "David Ball",
+  "license": "BSD",
   "dependencies": {
     "body-parser": "^1.17.2",
+    "config": "^1.26.1",
     "express": "^4.15.3",
+    "minimist": "^1.2.0",
     "node-dir": "^0.1.17",
     "socket.io": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/davidmball/by_working_example.git"
   }
 }

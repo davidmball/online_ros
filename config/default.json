@@ -1,0 +1,7 @@
+{
+  "host": "localhost",
+  "host_port": 8080,
+  "rosbridge_port": 9090,
+  "example_path" : "/home/david/ros_examples/src/",
+  "compile_path" : "/home/david/catkin_ws/src/"
+}

@@ -48,7 +48,7 @@ var roslib_connected = false;
  function try_ros_connection() {
    if (roslib_connected == false)
    {
-     ros.connect('ws://localhost:9090');
+     ros.connect('ws://{{host_name}}:{{rosbridge_port}}');
    }
  }
 
@@ -125,7 +125,7 @@ $.get("/get_files", function (data) {
           editor_sessions[filename].setMode("ace/mode/text");
      editor_sessions[filename].setValue(files[filename], -1);
    }
-   editor.setSession(editor_sessions['chatter.cpp']);
+   editor.setSession(editor_sessions['/src/chatter.cpp']);
 });
 
 function file_list_select() {
