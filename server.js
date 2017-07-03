@@ -45,10 +45,6 @@ app.get('/chatter.html', function (req, res) {
         } else {
             res.contentType('text/html');
             data = data.toString().replace(/\{\{example_title\}\}/, example_name);
-            data = data.toString().replace(/\{\{package_xml\}\}/, files['package.xml']);
-            data = data.toString().replace(/\{\{cmakelists_txt\}\}/, files['CMakeLists.txt']);
-            data = data.toString().replace(/\{\{chatter_cpp\}\}/, files['chatter.cpp']);
-
             res.send(data);
         }
     });
