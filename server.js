@@ -1,5 +1,5 @@
 const http = require('http');
-const fs = require('fs');
+const fs = require('fs-extra');
 const express = require('express');
 const path = require('path')
 const io   = require('socket.io')(http);
@@ -75,19 +75,21 @@ var socket = io.listen(server);
 
 app.post('/compile', function(req, res)
 {
+    var temp_dir = crypto.randomBytes(16).toString("hex");
+
     console.log("Writing code.");
-    fs.writeFileSync(compile_path + example_path_name + 'CMakeLists.txt', files['CMakeLists.txt']);
-    fs.writeFileSync(compile_path + example_path_name + 'package.xml', files['package.xml']);
+    fs.outputFileSync(compile_path + temp_dir + '/' + example_path_name + '/' + 'CMakeLists.txt', files['CMakeLists.txt']);
+    fs.outputFileSync(compile_path + temp_dir + '/' + example_path_name + '/' + 'package.xml', files['package.xml']);
     for (var filename in req.body.code_files)
     {
-      fs.writeFileSync(compile_path + example_path_name + filename, req.body.code_files[filename]);
+      fs.outputFileSync(compile_path + temp_dir + '/' + example_path_name + '/' + filename, req.body.code_files[filename]);
     }
     console.log("Compiling code.");
     var spawn = require('child_process').spawn;
     var command = './run_docker.sh'
     var docker_id = crypto.randomBytes(16).toString("hex");
     var net_id = crypto.randomBytes(16).toString("hex");
-    var args = ['10', docker_id, 'ros_workspace_rosbridge', compile_path, net_id];
+    var args = ['10', docker_id, 'ros_workspace_rosbridge', compile_path + temp_dir  + '/', net_id];
     var ls = spawn(command, args);
 
     ls.stdout.on('data', (data) => {
@@ -103,6 +105,7 @@ app.post('/compile', function(req, res)
 
     ls.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
+      fs.removeSync(compile_path + temp_dir);
       res.end('true');
     });
 });
