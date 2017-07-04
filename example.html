@@ -106,8 +106,9 @@ editor.setTheme("ace/theme/chrome");
 var EditSession = ace.require("ace/edit_session").EditSession;
 var editor_sessions = {};
 
-$.get("/get_files", function (data) {
+$.get("/get_files?name={{example_name}}", function (data) {
    files = JSON.parse(data);
+   console.log(files);
    var sel = document.getElementById('file_list');
    for (var filename in files)
    {
@@ -150,12 +151,12 @@ $('#compile').on('click', function() {
   {
     code[filename] = editor_sessions[filename].getValue();
   }
-//  var codeFile = editor.getValue();
+
   var json = {
     code_files: code,
   };
 
-  $.post("/compile", json, function(data, error, xhr) {
+  $.post("/compile?name={{example_name}}", json, function(data, error, xhr) {
 
   });
 });

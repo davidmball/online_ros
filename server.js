@@ -19,17 +19,16 @@ var host_port = config.get('host_port');
 var host = config.get('host');
 var rosbridge_port = config.get('rosbridge_port');
 
-var example_path_name = 'topics';
-var example_name = 'chatter';
 
-
-var files = {};
+var files = [];
 dir.readFiles(example_path,
     function(err, content, filename, next) {
         if (err)
             throw err;
 
-        files[filename.replace(example_path + example_path_name, '')] = content;
+        var filename2 = filename;
+        var example_name = filename.replace(example_path, '').split("/")[0];
+        files.push([example_name, filename2.replace(example_path + example_name, ''), content]);
         next();
     },
     function(err, files){
@@ -43,23 +42,39 @@ io.on('connection', function(socket){
 });
 
 
-app.get('/chatter.html', function (req, res) {
-   fs.readFile( __dirname + "/" + "chatter.html", function(err, data) {
-        if (err) {
-            res.send(404);
-        } else {
-            res.contentType('text/html');
-            data = data.toString().replace(/\{\{example_title\}\}/, example_name);
-            data = data.toString().replace(/\{\{host_name\}\}/, host);
-            data = data.toString().replace(/\{\{rosbridge_port\}\}/, rosbridge_port);
+app.get('/example.html', function (req, res) {
+   if (typeof req.query.name == 'undefined' || !req.query.name)
+   {
+     res.redirect('index.html');
+   } else {
 
-            res.send(data);
-        }
-    });
+     var example_name = req.query.name;
+
+     fs.readFile( __dirname + "/" + "example.html", function(err, data) {
+          if (err) {
+              res.send(404);
+          } else {
+              res.contentType('text/html');
+              data = data.toString().replace(/\{\{example_title\}\}/g, example_name);
+              data = data.toString().replace(/\{\{example_name\}\}/g, example_name);
+              data = data.toString().replace(/\{\{host_name\}\}/g, host);
+              data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port);
+
+              res.send(data);
+          }
+      });
+    }
 });
 
 app.get("/get_files", function (req, res) {
-  res.send(JSON.stringify(files));
+  var example_name = req.query.name;
+  var example_files = {};
+  for (var i = 0; i < files.length; i++)
+  {
+    if (files[i][0] == example_name)
+      example_files[files[i][1]] = files[i][2];
+  }
+  res.send(JSON.stringify(example_files));
 });
 
 var server = app.listen(host_port, function () {
@@ -77,13 +92,24 @@ app.post('/compile', function(req, res)
 {
     var temp_dir = crypto.randomBytes(16).toString("hex");
 
+    var example_name = req.query.name;
+
     console.log("Writing code.");
-    fs.outputFileSync(compile_path + temp_dir + '/' + example_path_name + '/' + 'CMakeLists.txt', files['CMakeLists.txt']);
-    fs.outputFileSync(compile_path + temp_dir + '/' + example_path_name + '/' + 'package.xml', files['package.xml']);
     for (var filename in req.body.code_files)
     {
-      fs.outputFileSync(compile_path + temp_dir + '/' + example_path_name + '/' + filename, req.body.code_files[filename]);
+      if (filename == '/CMakeLists.txt' || filename == '/package.xml')
+        continue;
+      fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + filename, req.body.code_files[filename]);
     }
+    var example_files = {};
+    for (var i = 0; i < files.length; i++)
+    {
+      if (files[i][0] == example_name)
+        example_files[files[i][1]] = files[i][2];
+    }
+    fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + 'CMakeLists.txt', example_files['/CMakeLists.txt']);
+    fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + 'package.xml', example_files['/package.xml']);
+
     console.log("Compiling code.");
     var spawn = require('child_process').spawn;
     var command = './run_docker.sh'
@@ -101,6 +127,8 @@ app.post('/compile', function(req, res)
 
     ls.stderr.on('data', (data) => {
       console.log(`stderr: ${data}`);
+      var data_string = data.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+      io.emit('compile_output', data_string);
     });
 
     ls.on('close', (code) => {
