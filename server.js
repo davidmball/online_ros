@@ -7,6 +7,7 @@ const dir = require('node-dir');
 const bodyParser = require('body-parser');
 const crypto = require("crypto");
 const config = require('config');
+const parseString = require('xml2js').parseString;
 
 var app = express();
 app.use(express.static('public'));
@@ -21,6 +22,8 @@ var rosbridge_port = config.get('rosbridge_port');
 
 
 var files = [];
+var index_example_list = {};
+
 dir.readFiles(example_path,
     function(err, content, filename, next) {
         if (err)
@@ -28,7 +31,15 @@ dir.readFiles(example_path,
 
         var filename2 = filename;
         var example_name = filename.replace(example_path, '').split("/")[0];
-        files.push([example_name, filename2.replace(example_path + example_name, ''), content]);
+        var filename2 = filename2.replace(example_path + example_name, '');
+
+        if (filename2 == '/package.xml')
+        {
+          parseString(content, function (err, result) {
+              index_example_list[example_name] = result;
+          });
+        }
+        files.push([example_name, filename2, content]);
         next();
     },
     function(err, files){
@@ -50,6 +61,17 @@ app.get('/example.html', function (req, res) {
 
      var example_name = req.query.name;
 
+     for (var i = 0; i < files.length; i++)
+     {
+       if (files[i][0] == example_name + '.xml')
+         example_xml = files[i][2];
+     }
+     var xml_result = '';
+     parseString(example_xml, function (err, result) {
+         xml_result = result;
+     });
+
+
      fs.readFile( __dirname + "/" + "example.html", function(err, data) {
           if (err) {
               res.send(404);
@@ -59,6 +81,9 @@ app.get('/example.html', function (req, res) {
               data = data.toString().replace(/\{\{example_name\}\}/g, example_name);
               data = data.toString().replace(/\{\{host_name\}\}/g, host);
               data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port);
+              data = data.toString().replace(/\{\{run_cmd\}\}/g, xml_result.example.run_cmd);
+              data = data.toString().replace(/\{\{description\}\}/g, xml_result.example.description);
+              data = data.toString().replace(/\{\{start_file\}\}/g, xml_result.example.start_file);
 
               res.send(data);
           }
@@ -75,6 +100,10 @@ app.get("/get_files", function (req, res) {
       example_files[files[i][1]] = files[i][2];
   }
   res.send(JSON.stringify(example_files));
+});
+
+app.get("/get_example_list", function (req, res) {
+  res.send(JSON.stringify(index_example_list));
 });
 
 var server = app.listen(host_port, function () {
@@ -106,6 +135,9 @@ app.post('/compile', function(req, res)
     {
       if (files[i][0] == example_name)
         example_files[files[i][1]] = files[i][2];
+
+      if (files[i][0] == example_name + '.xml')
+        example_xml = files[i][2];
     }
     fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + 'CMakeLists.txt', example_files['/CMakeLists.txt']);
     fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + 'package.xml', example_files['/package.xml']);
@@ -115,7 +147,14 @@ app.post('/compile', function(req, res)
     var command = './run_docker.sh'
     var docker_id = crypto.randomBytes(16).toString("hex");
     var net_id = crypto.randomBytes(16).toString("hex");
-    var args = ['10', docker_id, 'ros_workspace_rosbridge', compile_path + temp_dir  + '/', net_id];
+    var run_cmd = '';
+
+    parseString(example_xml, function (err, result) {
+        run_cmd = result.example.run_cmd;
+    });
+
+    console.log(run_cmd);
+    var args = ['10', docker_id, 'ros_workspace_rosbridge', compile_path + temp_dir  + '/', net_id, run_cmd];
     var ls = spawn(command, args);
 
     ls.stdout.on('data', (data) => {

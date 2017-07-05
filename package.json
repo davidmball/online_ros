@@ -19,7 +19,8 @@
     "fs-extra": "^3.0.1",
     "minimist": "^1.2.0",
     "node-dir": "^0.1.17",
-    "socket.io": "latest"
+    "socket.io": "latest",
+    "xml2js": "^0.4.17"
   },
   "repository": {
     "type": "git",
