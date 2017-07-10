@@ -105,7 +105,7 @@ app.get("/get_files", function (req, res) {
 app.get("/get_example_list", function (req, res) {
   res.send(JSON.stringify(index_example_list));
 });
-
+console.log(host_port);
 var server = app.listen(host_port, function () {
    var host = server.address().address;
    var port = server.address().port;
