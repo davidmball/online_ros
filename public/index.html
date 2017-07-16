@@ -12,10 +12,56 @@
   <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
   <script type="text/javascript" src="/socket.io/socket.io.js"></script>
   <script type="text/javascript" src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 </head>
 
 
   <body>
+
+<script type='text/javascript'>
+
+var app = angular.module("app", []);
+app.controller("ListController", ["$scope", "$http", function ($scope, $http) {
+
+      $http.get('/get_example_list')
+      .then(
+      function (response) {
+          $scope.Members = response.data;
+      },
+      function (response) {
+        console.log("failure");
+      }
+  );
+}]);
+
+app.filter('remove_array', function() {
+  return function(val) {
+     var newval = JSON.stringify(val);
+     var reg = newval.replace(/[\[\]"]/g, '');
+     return reg;
+  };
+});
+
+/*
+  var employeeApp = angular.module("EmployeeApp",[]);
+    employeeApp.controller("empCtrl",function($scope){
+      $scope.query = {}
+      $scope.queryBy = '$'
+      var list = [];
+      $.get("/get_example_list", function (data) {
+        list = JSON.parse(data);
+        console.log(list);
+        for (example_name in list)
+        {
+           $(".insert").append('<li><a href="example.html?name=' + example_name + '">' + example_name + '</a> - ' + list[example_name].package.description + '</li></br>' + list[example_name].package.run_depend);
+        }
+      });
+      $scope.employees = list;
+      console.log($scope.employees);
+      $scope.orderProp="name";
+    });
+    */
+</script>
 
   <div class="navbar">
     <a href="index.html">ROS, by WORKING example</a>
@@ -29,22 +75,22 @@
 </br>
 </br>
   Welcome to the By Working Example site for ROS.</br>
-
-<h2>Examples</h2>
-  <ul class="sub-menu insert">
-  </ul>
-</div>
-
-<script type='text/javascript'>
-$.get("/get_example_list", function (data) {
-  list = JSON.parse(data);
-
-  for (example_name in list)
-  {
-     $(".insert").append('<li><a href="example.html?name=' + example_name + '">' + example_name + '</a> - ' + list[example_name].package.description + '</li></br>' + list[example_name].package.run_depend);
-  }
-});
-</script>
+  <div ng-app="app" ng-controller="ListController">
+          <h3>Examples</h3>
+          Filter <input type="text" placeholder="Search for example..." ng-model="allKeyword" />
+          <table class="table">
+              <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Tags</th>
+              </tr>
+              <tr ng-repeat="member in Members | filter: allKeyword">
+                  <td><a href="example.html?name={{member.package.name | remove_array}}">{{member.package.name | remove_array}}</a></td>
+                  <td>{{member.package.description | remove_array}}</td>
+                  <td>{{member.package.run_depend | remove_array}}</td>
+              </tr>
+          </table>
+  </div>
 
   </body>
   <footer style="position: fixed; bottom: 0px; width: 100%; height: 40px; background-color: white;">

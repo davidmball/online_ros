@@ -22,7 +22,7 @@ var rosbridge_port = config.get('rosbridge_port');
 
 
 var files = [];
-var index_example_list = {};
+var index_example_list = [];
 
 dir.readFiles(example_path,
     function(err, content, filename, next) {
@@ -36,7 +36,7 @@ dir.readFiles(example_path,
         if (filename2 == '/package.xml')
         {
           parseString(content, function (err, result) {
-              index_example_list[example_name] = result;
+              index_example_list.push(result);
           });
         }
         files.push([example_name, filename2, content]);
@@ -103,8 +103,9 @@ app.get("/get_files", function (req, res) {
 });
 
 app.get("/get_example_list", function (req, res) {
-  res.send(JSON.stringify(index_example_list));
+  res.send(index_example_list);
 });
+
 console.log(host_port);
 var server = app.listen(host_port, function () {
    var host = server.address().address;
