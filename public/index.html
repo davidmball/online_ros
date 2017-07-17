@@ -26,6 +26,7 @@ app.controller("ListController", ["$scope", "$http", function ($scope, $http) {
       $http.get('/get_example_list')
       .then(
       function (response) {
+        console.log(response.data);
           $scope.Members = response.data;
       },
       function (response) {
@@ -42,25 +43,6 @@ app.filter('remove_array', function() {
   };
 });
 
-/*
-  var employeeApp = angular.module("EmployeeApp",[]);
-    employeeApp.controller("empCtrl",function($scope){
-      $scope.query = {}
-      $scope.queryBy = '$'
-      var list = [];
-      $.get("/get_example_list", function (data) {
-        list = JSON.parse(data);
-        console.log(list);
-        for (example_name in list)
-        {
-           $(".insert").append('<li><a href="example.html?name=' + example_name + '">' + example_name + '</a> - ' + list[example_name].package.description + '</li></br>' + list[example_name].package.run_depend);
-        }
-      });
-      $scope.employees = list;
-      console.log($scope.employees);
-      $scope.orderProp="name";
-    });
-    */
 </script>
 
   <div class="navbar">
@@ -82,12 +64,14 @@ app.filter('remove_array', function() {
               <tr>
                   <th>Name</th>
                   <th>Description</th>
+                  <th>Packages</th>
                   <th>Tags</th>
               </tr>
               <tr ng-repeat="member in Members | filter: allKeyword">
-                  <td><a href="example.html?name={{member.package.name | remove_array}}">{{member.package.name | remove_array}}</a></td>
-                  <td>{{member.package.description | remove_array}}</td>
-                  <td>{{member.package.run_depend | remove_array}}</td>
+                  <td><a href="example.html?name={{member[0].package.name | remove_array}}">{{member[1].example.title | remove_array}}</a></td>
+                  <td>{{member[0].package.description | remove_array}}</td>
+                  <td>{{member[0].package.run_depend | remove_array}}</td>
+                  <td>{{member[1].example.tag | remove_array}}</td>
               </tr>
           </table>
   </div>

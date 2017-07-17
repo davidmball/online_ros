@@ -77,7 +77,7 @@ app.get('/example.html', function (req, res) {
               res.send(404);
           } else {
               res.contentType('text/html');
-              data = data.toString().replace(/\{\{example_title\}\}/g, example_name);
+              data = data.toString().replace(/\{\{example_title\}\}/g, xml_result.example.title);
               data = data.toString().replace(/\{\{example_name\}\}/g, example_name);
               data = data.toString().replace(/\{\{host_name\}\}/g, host);
               data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port);
@@ -102,8 +102,27 @@ app.get("/get_files", function (req, res) {
   res.send(JSON.stringify(example_files));
 });
 
+var index_example_list2 = [];
+var first = false;
 app.get("/get_example_list", function (req, res) {
-  res.send(index_example_list);
+  for (var i = 0; i < index_example_list.length; i++)
+  {
+    var example_xml;
+    for (var j = 0; j < files.length; j++)
+    {
+      if (files[j][0] == index_example_list[i].package.name + '.xml')
+        example_xml = files[j][2];
+    }
+    var xml_result = '';
+    parseString(example_xml, function (err, result) {
+        xml_result = result;
+    });
+
+    index_example_list2.push([index_example_list[i], xml_result]);
+  }
+
+  first = false;
+  res.send(index_example_list2);
 });
 
 console.log(host_port);
@@ -111,7 +130,7 @@ var server = app.listen(host_port, function () {
    var host = server.address().address;
    var port = server.address().port;
 
-   console.log("Example app listening at http://%s:%s", host, port);
+   console.log("Working example listening at http://%s:%s", host, port);
 })
 
 var socket = io.listen(server);
