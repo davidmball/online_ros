@@ -174,7 +174,7 @@ app.post('/compile', function(req, res)
     });
 
     console.log(run_cmd);
-    var args = ['10', docker_id, 'ros_workspace_rosbridge', compile_path + temp_dir  + '/', net_id, run_cmd];
+    var args = ['15', docker_id, 'ros_workspace_rosbridge', compile_path + temp_dir  + '/', net_id, run_cmd];
     var ls = spawn(command, args);
 
     ls.stdout.on('data', (data) => {
