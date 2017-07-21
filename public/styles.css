@@ -23,7 +23,7 @@ body {
 
 
 #editor {
-    height: 500px;
+    height: 400px;
     margin: 20px 20px 20px 0px;
     border: 1px solid #DDD;
     border-radius: 4px;
@@ -42,7 +42,7 @@ body {
 }
 
 .feedback textarea {
-    height: 300px;
+    height: 200px;
     width: 450px;
     font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
