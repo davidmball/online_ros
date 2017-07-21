@@ -77,14 +77,8 @@ app.get('/example.html', function (req, res) {
               res.send(404);
           } else {
               res.contentType('text/html');
-              data = data.toString().replace(/\{\{example_title\}\}/g, xml_result.example.title);
-              data = data.toString().replace(/\{\{example_name\}\}/g, example_name);
               data = data.toString().replace(/\{\{host_name\}\}/g, host);
               data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port);
-              data = data.toString().replace(/\{\{run_cmd\}\}/g, xml_result.example.run_cmd);
-              data = data.toString().replace(/\{\{description\}\}/g, xml_result.example.description);
-              data = data.toString().replace(/\{\{start_file\}\}/g, xml_result.example.start_file);
-
               res.send(data);
           }
       });
@@ -99,7 +93,19 @@ app.get("/get_files", function (req, res) {
     if (files[i][0] == example_name)
       example_files[files[i][1]] = files[i][2];
   }
-  res.send(JSON.stringify(example_files));
+
+  var example_xml;
+  for (var j = 0; j < files.length; j++)
+  {
+    if (files[j][0] == example_name + '.xml')
+      example_xml = files[j][2];
+  }
+  var xml_result = '';
+  parseString(example_xml, function (err, result) {
+      xml_result = result;
+  });
+
+  res.send(JSON.stringify([example_files, xml_result]));
 });
 
 var index_example_list2 = [];

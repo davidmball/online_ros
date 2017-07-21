@@ -25,13 +25,13 @@
 
 <div style="float: left; width: 50%" class="main">
 
-  <h1>{{example_title}}</h1>
-  <p>{{description}}</p>
+  <h1 id="example_title"></h1>
+  <p id="description"></p>
 
   <select name="files" id="file_list" size="3" onchange="file_list_select();"></select>
 
   <div id="editor"></div>
-      <input type="button" value="Compile" id="compile"> {{run_cmd}}
+      <input type="button" value="Compile" id="compile"> Run Command: <b id="run_cmd"></b>
 </div>
 
 <div style="float: right; width: 50%" class="feedback">
@@ -154,21 +154,30 @@ $(document).ready(function(){
       });
 });
 
+var example_info;
+
 var files = {};
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/chrome");
 var EditSession = ace.require("ace/edit_session").EditSession;
 var editor_sessions = {};
 
-$.get("/get_files?name={{example_name}}", function (data) {
-   files = JSON.parse(data);
-  // console.log(files);
+var example_name = location.search.split('name=')[1];
+
+$.get("/get_files?name=" + example_name, function (data) {
+
+  // parse the data into the files for the editor and the general example information
+   var parsed_data = JSON.parse(data);
+   files = parsed_data[0];
+   example_info = parsed_data[1];
+
+   // load each file into its own editor
    var sel = document.getElementById('file_list');
    for (var filename in files)
    {
      var opt = document.createElement('option');
-     opt.innerHTML = filename;
      opt.value = filename;
+     opt.innerHTML = filename;
      sel.appendChild(opt);
      var filename_extension = filename.split('.').pop();
      editor_sessions[filename] = new EditSession(filename);
@@ -180,7 +189,15 @@ $.get("/get_files?name={{example_name}}", function (data) {
           editor_sessions[filename].setMode("ace/mode/text");
      editor_sessions[filename].setValue(files[filename], -1);
    }
-   editor.setSession(editor_sessions['{{start_file}}']);
+
+   // set the initial file for editing
+   // TODO: Test if this is set / valid
+   editor.setSession(editor_sessions[example_info.example.start_file]);
+
+   // set other parts of the page
+   document.getElementById("run_cmd").innerHTML = example_info.example.run_cmd;
+   document.getElementById("example_title").innerHTML = example_info.example.title;
+   document.getElementById("description").innerHTML = example_info.example.description;
 });
 
 function file_list_select() {
@@ -210,7 +227,7 @@ $('#compile').on('click', function() {
     code_files: code,
   };
 
-  $.post("/compile?name={{example_name}}", json, function(data, error, xhr) {
+  $.post("/compile?name=" + example_name, json, function(data, error, xhr) {
 
   });
 });
