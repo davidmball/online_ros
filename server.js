@@ -109,25 +109,28 @@ app.get("/get_files", function (req, res) {
 });
 
 var index_example_list2 = [];
-var first = false;
+var first = true;
 app.get("/get_example_list", function (req, res) {
-  for (var i = 0; i < index_example_list.length; i++)
+  if (first)
   {
-    var example_xml;
-    for (var j = 0; j < files.length; j++)
+    for (var i = 0; i < index_example_list.length; i++)
     {
-      if (files[j][0] == index_example_list[i].package.name + '.xml')
-        example_xml = files[j][2];
+      var example_xml;
+      for (var j = 0; j < files.length; j++)
+      {
+        if (files[j][0] == index_example_list[i].package.name + '.xml')
+          example_xml = files[j][2];
+      }
+      var xml_result = '';
+      parseString(example_xml, function (err, result) {
+          xml_result = result;
+      });
+
+      index_example_list2.push([index_example_list[i], xml_result]);
     }
-    var xml_result = '';
-    parseString(example_xml, function (err, result) {
-        xml_result = result;
-    });
 
-    index_example_list2.push([index_example_list[i], xml_result]);
+    first = false;
   }
-
-  first = false;
   res.send(index_example_list2);
 });
 
