@@ -24,6 +24,9 @@ var rosbridge_port = config.get('rosbridge_port');
 var files = [];
 var index_example_list = [];
 
+/**
+ * Runs at the start to read, process and store all of the example files. 
+ */
 dir.readFiles(example_path,
     function(err, content, filename, next) {
         if (err)
@@ -52,13 +55,20 @@ io.on('connection', function(socket){
   console.log('a user connected');
 });
 
-
+/**
+ * This returns the example page with the rosbridge url and port set.
+ */
 app.get('/example.html', function (req, res) {
+
+  // TODO: Handle when the example requested isn't in the list. To begin with
+  // redirect the user back to the index page.
    if (typeof req.query.name == 'undefined' || !req.query.name)
    {
      res.redirect('index.html');
    } else {
 
+     // Get the relevant xml file details.
+     // TODO: Generate and store this lookup globally.
      var example_name = req.query.name;
 
      for (var i = 0; i < files.length; i++)
@@ -71,7 +81,7 @@ app.get('/example.html', function (req, res) {
          xml_result = result;
      });
 
-
+     // Set the web address and port for the rosbridge api call.
      fs.readFile( __dirname + "/" + "example.html", function(err, data) {
           if (err) {
               res.send(404);
@@ -85,7 +95,14 @@ app.get('/example.html', function (req, res) {
     }
 });
 
+
+/**
+ * This returns the code / other files for a particular example and is
+ * called when the user opens the examples page.
+ */
 app.get("/get_files", function (req, res) {
+
+  // TODO: Handle when the example requested isn't in the list.
   var example_name = req.query.name;
   var example_files = {};
   for (var i = 0; i < files.length; i++)
@@ -94,6 +111,8 @@ app.get("/get_files", function (req, res) {
       example_files[files[i][1]] = files[i][2];
   }
 
+  // get the xml data.
+  // TODO: This lookup should be generated and stored globally.
   var example_xml;
   for (var j = 0; j < files.length; j++)
   {
@@ -111,7 +130,7 @@ app.get("/get_files", function (req, res) {
 var index_example_list2 = [];
 var first = true;
 app.get("/get_example_list", function (req, res) {
-  // TODO: Generating this index example list should be done elsewhere
+  // TODO: Generating this index example list lookup should be done elsewhere
   if (first)
   {
     for (var i = 0; i < index_example_list.length; i++)
@@ -146,63 +165,74 @@ var server = app.listen(host_port, function () {
 var socket = io.listen(server);
 
 
-
+/**
+ * Takes the code files from the user, compiles and runs them in a docker container,
+ * and returns the std outputs to the user.
+ * Overwrites the package.xml and CMakeLists.txt file with the original. (For security.)
+ */
 app.post('/compile', function(req, res)
 {
-    var temp_dir = crypto.randomBytes(16).toString("hex");
+  // each compile get written to its own directory
+  var temp_dir = crypto.randomBytes(16).toString("hex");
 
-    var example_name = req.query.name;
+  // write out the user files to the directory taht will be shared with the docker container
+  // except CMakeLists and package.
+  var example_name = req.query.name;
+  for (var filename in req.body.code_files)
+  {
+    if (filename == '/CMakeLists.txt' || filename == '/package.xml')
+      continue;
+    fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + filename, req.body.code_files[filename]);
+  }
 
-    console.log("Writing code.");
-    for (var filename in req.body.code_files)
-    {
-      if (filename == '/CMakeLists.txt' || filename == '/package.xml')
-        continue;
-      fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + filename, req.body.code_files[filename]);
-    }
-    var example_files = {};
-    for (var i = 0; i < files.length; i++)
-    {
-      if (files[i][0] == example_name)
-        example_files[files[i][1]] = files[i][2];
+  // write out the CMakeLists and packge files.
+  // TODO: These lookups should be pre-generated and stored globally.
+  var example_files = {};
+  for (var i = 0; i < files.length; i++)
+  {
+    if (files[i][0] == example_name)
+      example_files[files[i][1]] = files[i][2];
 
-      if (files[i][0] == example_name + '.xml')
-        example_xml = files[i][2];
-    }
-    fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + 'CMakeLists.txt', example_files['/CMakeLists.txt']);
-    fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + 'package.xml', example_files['/package.xml']);
+    if (files[i][0] == example_name + '.xml')
+      example_xml = files[i][2];
+  }
+  fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + 'CMakeLists.txt', example_files['/CMakeLists.txt']);
+  fs.outputFileSync(compile_path + temp_dir + '/' + example_name + '/' + 'package.xml', example_files['/package.xml']);
 
-    console.log("Compiling code.");
-    var spawn = require('child_process').spawn;
-    var command = './run_docker.sh'
-    var docker_id = crypto.randomBytes(16).toString("hex");
-    var net_id = crypto.randomBytes(16).toString("hex");
-    var run_cmd = '';
+  // setup and spawn the docker container
+  console.log("Compiling code.");
+  var spawn = require('child_process').spawn;
+  var command = './run_docker.sh'
+  var docker_id = crypto.randomBytes(16).toString("hex");
+  var net_id = crypto.randomBytes(16).toString("hex");
+  var run_cmd = '';
 
-    parseString(example_xml, function (err, result) {
-        run_cmd = result.example.run_cmd;
-    });
+  parseString(example_xml, function (err, result) {
+      run_cmd = result.example.run_cmd;
+  });
 
-    console.log(run_cmd);
-    var args = ['15', docker_id, 'ros_workspace_rosbridge', compile_path + temp_dir  + '/', net_id, run_cmd];
-    var ls = spawn(command, args);
+  console.log(run_cmd);
+  var args = ['15', docker_id, 'ros_workspace_rosbridge', compile_path + temp_dir  + '/', net_id, run_cmd];
+  var ls = spawn(command, args);
 
-    ls.stdout.on('data', (data) => {
-      //console.log(`stdout: ${data}`);
-      // TODO: Actually it would be great if the text was rendered in colour in the html page
-      var data_string = data.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
-      io.emit('compile_output', data_string);
-    });
+  // send the compilee and executable stdout/err output to the user's browserzs
+  ls.stdout.on('data', (data) => {
+    //console.log(`stdout: ${data}`);
+    // TODO: Actually it would be great if the text was rendered in colour in the html page
+    var data_string = data.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+    io.emit('compile_output', data_string);
+  });
 
-    ls.stderr.on('data', (data) => {
-      console.log(`stderr: ${data}`);
-      var data_string = data.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
-      io.emit('compile_output', data_string);
-    });
+  ls.stderr.on('data', (data) => {
+    //console.log(`stderr: ${data}`);
+    var data_string = data.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+    io.emit('compile_output', data_string);
+  });
 
-    ls.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-      fs.removeSync(compile_path + temp_dir);
-      res.end('true');
-    });
+  // end this post request
+  ls.on('close', (code) => {
+    //console.log(`child process exited with code ${code}`);
+    fs.removeSync(compile_path + temp_dir);
+    res.end('true');
+  });
 });
