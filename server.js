@@ -111,6 +111,7 @@ app.get("/get_files", function (req, res) {
 var index_example_list2 = [];
 var first = true;
 app.get("/get_example_list", function (req, res) {
+  // TODO: Generating this index example list should be done elsewhere
   if (first)
   {
     for (var i = 0; i < index_example_list.length; i++)
