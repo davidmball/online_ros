@@ -17,6 +17,7 @@
     "config": "^1.26.1",
     "express": "^4.15.3",
     "fs-extra": "^3.0.1",
+    "helmet": "^3.8.0",
     "minimist": "^1.2.0",
     "node-dir": "^0.1.17",
     "socket.io": "latest",

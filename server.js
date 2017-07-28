@@ -8,8 +8,10 @@ const bodyParser = require('body-parser');
 const crypto = require("crypto");
 const config = require('config');
 const parseString = require('xml2js').parseString;
+const helmet = require('helmet');
 
 var app = express();
+app.use(helmet());
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -25,7 +27,7 @@ var files = [];
 var index_example_list = [];
 
 /**
- * Runs at the start to read, process and store all of the example files. 
+ * Runs at the start to read, process and store all of the example files.
  */
 dir.readFiles(example_path,
     function(err, content, filename, next) {
