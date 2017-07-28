@@ -25,6 +25,8 @@ var rosbridge_port = config.get('rosbridge_port');
 
 var files = [];
 var index_example_list = [];
+var index_example_list2 = [];
+var first = true;
 
 /**
  * Runs at the start to read, process and store all of the example files.
@@ -47,10 +49,27 @@ dir.readFiles(example_path,
         files.push([example_name, filename2, content]);
         next();
     },
-    function(err, files){
+    function(err){
         if (err)
             throw err;
-        console.log('finished reading files:', files);
+        console.log('Read this many examples:', index_example_list.length);
+
+        // store the package and user configuration xml for the index page
+        for (var i = 0; i < index_example_list.length; i++)
+        {
+          var example_xml;
+          for (var j = 0; j < files.length; j++)
+          {
+            if (files[j][0] == index_example_list[i].package.name + '.xml')
+              example_xml = files[j][2];
+          }
+          var xml_result = '';
+          parseString(example_xml, function (err, result) {
+              xml_result = result;
+          });
+
+          index_example_list2.push([index_example_list[i], xml_result]);
+        }
     });
 
 io.on('connection', function(socket){
@@ -68,21 +87,6 @@ app.get('/example.html', function (req, res) {
    {
      res.redirect('index.html');
    } else {
-
-     // Get the relevant xml file details.
-     // TODO: Generate and store this lookup globally.
-     var example_name = req.query.name;
-
-     for (var i = 0; i < files.length; i++)
-     {
-       if (files[i][0] == example_name + '.xml')
-         example_xml = files[i][2];
-     }
-     var xml_result = '';
-     parseString(example_xml, function (err, result) {
-         xml_result = result;
-     });
-
      // Set the web address and port for the rosbridge api call.
      fs.readFile( __dirname + "/" + "example.html", function(err, data) {
           if (err) {
@@ -129,30 +133,10 @@ app.get("/get_files", function (req, res) {
   res.send(JSON.stringify([example_files, xml_result]));
 });
 
-var index_example_list2 = [];
-var first = true;
+/**
+ * The index page calls this to get a list of all the files.
+ */
 app.get("/get_example_list", function (req, res) {
-  // TODO: Generating this index example list lookup should be done elsewhere
-  if (first)
-  {
-    for (var i = 0; i < index_example_list.length; i++)
-    {
-      var example_xml;
-      for (var j = 0; j < files.length; j++)
-      {
-        if (files[j][0] == index_example_list[i].package.name + '.xml')
-          example_xml = files[j][2];
-      }
-      var xml_result = '';
-      parseString(example_xml, function (err, result) {
-          xml_result = result;
-      });
-
-      index_example_list2.push([index_example_list[i], xml_result]);
-    }
-
-    first = false;
-  }
   res.send(index_example_list2);
 });
 
