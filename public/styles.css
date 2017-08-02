@@ -1,11 +1,15 @@
 body {
-    background-color: lightblue;
+  background-color: #FAFAFA;
+}
+
+footer {
+  background-color: #FAFAFA;
 }
 
 /* The navigation bar */
 .navbar {
     overflow: hidden;
-    background-color: #333;
+    background-color: #101010;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
     width: 100%; /* Full width */
@@ -58,4 +62,5 @@ div.tab-frame input:nth-of-type(1):checked ~ .tab:nth-of-type(1),
 div.tab-frame input:nth-of-type(2):checked ~ .tab:nth-of-type(2),
 div.tab-frame input:nth-of-type(3):checked ~ .tab:nth-of-type(3),
 div.tab-frame input:nth-of-type(4):checked ~ .tab:nth-of-type(4),
-div.tab-frame input:nth-of-type(5):checked ~ .tab:nth-of-type(5){ display:block;}
+div.tab-frame input:nth-of-type(5):checked ~ .tab:nth-of-type(5),
+div.tab-frame input:nth-of-type(6):checked ~ .tab:nth-of-type(6){ display:block;}

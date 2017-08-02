@@ -8,14 +8,16 @@
   <meta name="description" content="This page has working ROS examples that you can edit, compile and run online." />
   <meta name="keywords" content="ROS, code, compile, example, tutorial" />
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script type="text/javascript" src="http://cdn.robotwebtools.org.s3.amazonaws.com/threejs/current/three.min.js"></script>
   <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
   <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+  <script type="text/javascript" src="http://cdn.robotwebtools.org.s3.amazonaws.com/ros3djs/current/ros3d.min.js"></script>
   <script type="text/javascript" src="/socket.io/socket.io.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ace.js" type="text/javascript" charset="utf-8"></script>
 </head>
 
 
-  <body>
+  <body onload="init()">
 
   <div class="navbar">
     <a href="index.html">ROS, by WORKING example</a>
@@ -36,14 +38,15 @@
 
 <div style="float: right; width: 50%" class="feedback">
   <div class="tab-frame" id="feedback_top">
-    <input type="radio" checked name="tab" id="tab_compile"><label for="tab_compile">Compile</label>
+    <input type="radio" checked name="tab" id="tab_terminal"><label for="tab_terminal">Terminal</label>
     <input type="radio" name="tab" id="tab_topics"><label for="tab_topics">Topics</label>
     <input type="radio" name="tab" id="tab_services"><label for="tab_services">Services</label>
     <input type="radio" name="tab" id="tab_nodes"><label for="tab_nodes">Nodes</label>
     <input type="radio" name="tab" id="tab_params"><label for="tab_params">Params</label>
+    <input type="radio" name="tab" id="tab_viz"><label for="tab_viz">Viewer</label>
 
     <div class="tab">
-      <textarea id="show_compile" readonly="readonly"></textarea>
+      <textarea id="show_terminal" readonly="readonly"></textarea>
     </div>
     <div class="tab">
       <select name="topics" id="topic_list" size="5" onchange="topic_list_select();"></select>
@@ -58,6 +61,9 @@
     <div class="tab">
        <select name="params" id="param_list" size="5" onchange="param_list_select();"></select>
     </div>
+    <div class="tab">
+      <div id="roslib_viewer"></div>
+    </div>
   </div>
 
 
@@ -66,11 +72,18 @@
 
 <script type='text/javascript'>
 
+var example_info;
+
 // ROS code
 var ros = new ROSLIB.Ros();
 var roslib_connected = false;
 var interval_active = false;
 var interval;
+
+var interval_get_ros_details;
+
+var viewer;
+var markerClient;
 
 function try_ros_connection() {
   if (roslib_connected == false)
@@ -80,83 +93,169 @@ function try_ros_connection() {
 }
 
 ros.on('connection', function() {
- roslib_connected = true;
- console.log('Connected to websocket server.');
- interval_active = false;
- clearInterval(interval);
- var listener = new ROSLIB.Topic({
-   ros : ros,
-   name : '/chatter',
-   messageType : 'std_msgs/String'
- });
+  roslib_connected = true;
+  console.log('Connected to websocket server.');
+  interval_active = false;
+  clearInterval(interval);
+  interval_get_ros_details = setInterval(get_ros_details, 500);
 
- listener.subscribe(function(message) {
-   console.log('Received message on ' + listener.name + ': ' + message.data);
-   document.getElementById("show_topic").value += message.data + '\r';
-   document.getElementById("show_topic").scrollTop = document.getElementById("show_topic").scrollHeight;
- });
+if (example_info.example.feedback_top[0].tab == "viz")
+{
+  if (typeof viewer != "undefined") {
+    viewer.unsubscribe();
+    delete viewer;
+  }
 
- ros.getTopics(function(topics) {
-   var sel = document.getElementById('topic_list');
-   for (var topic in topics)
-   {
-     var opt = document.createElement('option');
-     opt.innerHTML = topics[topic];
-     opt.value = topics[topic];
-     sel.appendChild(opt);
-   }
- });
- ros.getNodes(function(nodes) {
-   var sel = document.getElementById('node_list');
-   for (var node in nodes)
-   {
-     var opt = document.createElement('option');
-     opt.innerHTML = nodes[node];
-     opt.value = nodes[node];
-     sel.appendChild(opt);
-   }
- });
- ros.getServices(function(services) {
-   var sel = document.getElementById('service_list');
-   for (var service in services)
-   {
-     var opt = document.createElement('option');
-     opt.innerHTML = services[service];
-     opt.value = services[service];
-     sel.appendChild(opt);
-   }
- });
- ros.getParams(function(params) {
-   var sel = document.getElementById('param_list');
-   for (var param in params)
-   {
-     var opt = document.createElement('option');
-     opt.innerHTML = params[param];
-     opt.value = params[param];
-     sel.appendChild(opt);
-   }
- });
+  // TODO: The width and height need to come from somewhere meaningful
+  viewer = new ROS3D.Viewer({
+    divID : 'roslib_viewer',
+    width : 300,
+    height : 200,
+    antialias : true
+  });
+
+  if (typeof markerClient != "undefined") {
+    markerClient.unsubscribe();
+    delete markerClient;
+  }
+  markerClient = new ROS3D.MarkerClient({
+    ros : ros,
+    tfClient : new ROSLIB.TFClient({
+      ros : ros,
+      angularThres : 0.01,
+      transThres : 0.01,
+      rate : 10.0,
+      fixedFrame : example_info.example.feedback_top[0].frame[0]
+    }),
+    topic : example_info.example.feedback_top[0].topic[0],
+    rootObject : viewer.scene
+  });
+}
+  if (typeof example_info.example.feedback_top[0].tab == "topic" &&
+    typeof example_info.example.feedback_top[0].topic[0] != "undefined") {
+    set_topic(example_info.example.feedback_top[0].topic[0]);
+  }
+
 });
 
 ros.on('error', function(error) {
- console.log('Error connecting to websocket server: ', error);
+  console.log('Error connecting to websocket server: ', error);
 });
 
 ros.on('close', function() {
- console.log('Connection to websocket server closed.');
+  clearInterval(interval_get_ros_details);
+  console.log('Connection to websocket server closed.');
 });
 
+var selected_topic_name;
+var topic_listener;
 
+function set_topic(topic_name) {
+  selected_topic_name = topic_name;
+  var topic_type;
+  if (topic_name == '/rosout' || topic_name == 'rosout_agg') {
+    topic_type = 'rosgraph_msgs/Log';
+  } else if (topic_name == example_info.example.feedback_top[0].topic[0]) {
+    topic_type = example_info.example.feedback_top[0].msg_type[0];
+  } else {
+    // hope this works.
+    topic_type = 'std_msgs/String';
+  }
+  console.log("set topic " + topic_type);
+  if (typeof topic_listener != "undefined") {
+    topic_listener.unsubscribe();
+    delete topic_listener;
+    document.getElementById("show_topic").value = '';
+  }
+
+    // TODO: Why do I need to set the messagetype for the listener?
+  topic_listener = new ROSLIB.Topic({
+    ros : ros,
+    name : topic_name,
+    messageType : topic_type
+  });
+
+  topic_listener.subscribe(function(message) {
+    // set 2 space tabs and get rid of the ""
+    message = JSON.stringify(message, null, 2).replace(/\"([^(\")"]+)\":/g,"$1:");
+    document.getElementById("show_topic").value += message + '\r';
+    document.getElementById("show_topic").scrollTop = document.getElementById("show_topic").scrollHeight;
+  });
+}
+
+function topic_list_select() {
+  var sel = document.getElementById("topic_list");
+  var sel_val = sel.options[sel.selectedIndex].value;
+  console.log("topic list select " + sel_val);
+  set_topic(sel_val);
+}
+
+/**
+ * Gets and updates the list of ROS topics, nodes, services, and parameters.
+ * This is repeatidly called at an interval whilst the ROS bridge is connected.
+ * TODO: It would be much better if this was pushed to us when a change happens.
+ */
+function get_ros_details() {
+  ros.getTopics(function(topics) {
+    // TODO: It's a shame this doesn't also return the message types.
+    var sel = document.getElementById('topic_list');
+    sel.options.length = 0;
+    for (var topic in topics)
+    {
+      var opt = document.createElement('option');
+      opt.innerHTML = topics[topic];
+      opt.value = topics[topic];
+      sel.appendChild(opt);
+    }
+    sel.value = selected_topic_name;
+  });
+  ros.getNodes(function(nodes) {
+    var sel = document.getElementById('node_list');
+    sel.options.length = 0;
+    for (var node in nodes)
+    {
+      var opt = document.createElement('option');
+      opt.innerHTML = nodes[node];
+      opt.value = nodes[node];
+      sel.appendChild(opt);
+    }
+  });
+  ros.getServices(function(services) {
+    var sel = document.getElementById('service_list');
+    sel.options.length = 0;
+    for (var service in services)
+    {
+      var opt = document.createElement('option');
+      opt.innerHTML = services[service];
+      opt.value = services[service];
+      sel.appendChild(opt);
+    }
+  });
+  ros.getParams(function(params) {
+    var sel = document.getElementById('param_list');
+    sel.options.length = 0;
+    for (var param in params)
+    {
+      var opt = document.createElement('option');
+      opt.innerHTML = params[param];
+      opt.value = params[param];
+      sel.appendChild(opt);
+    }
+  });
+}
+
+/**
+ * This function updates the terminal feedback textbox.
+ */
 $(document).ready(function(){
-      var socket = io();
-      socket.on('compile_output',function(msg){
-      //  $("#show_compile").append(msg + '<br />');
-      document.getElementById("show_compile").value += msg;
-      document.getElementById("show_compile").scrollTop = document.getElementById("show_compile").scrollHeight
-      });
+  var socket = io();
+  socket.on('compile_output',function(msg){
+  document.getElementById("show_terminal").value += msg;
+  document.getElementById("show_terminal").scrollTop = document.getElementById("show_terminal").scrollHeight
+  });
 });
 
-var example_info;
+
 
 var files = {};
 var editor = ace.edit("editor");
@@ -195,12 +294,16 @@ $.get("/get_files?name=" + example_name, function (data) {
    // set the initial file for editing
    // TODO: Test if this is set / valid
    editor.setSession(editor_sessions[example_info.example.start_file]);
+   sel.value = example_info.example.start_file;
 
    // set other parts of the page
    document.getElementById("run_cmd").innerHTML = example_info.example.run_cmd;
    document.getElementById("example_title").innerHTML = example_info.example.title;
    document.getElementById("description").innerHTML = example_info.example.description;
+   document.getElementById("tab_" + example_info.example.feedback_top[0].tab).checked = true;
+
 });
+
 
 function file_list_select() {
   var sel = document.getElementById("file_list");
@@ -223,7 +326,7 @@ $('#compile').on('click', function() {
      interval = setInterval(try_ros_connection, 2000);
   }
 
-  document.getElementById("show_compile").value = '';
+  document.getElementById("show_terminal").value = '';
   document.getElementById("show_topic").value = '';
 
   var code = {};
@@ -243,7 +346,7 @@ $('#compile').on('click', function() {
 
 </script>
 
-<footer style="position: fixed; bottom: 0px; width: 100%; height: 40px; background-color: white;">
+<footer style="position: fixed; text-align: center; bottom: 0px; width: 100%; height: 40px; background-color: 0xFAFAFA;">
   Except where otherwise noted, these web pages are licensed under <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0</a>
   and the code is licensed under <a href="https://opensource.org/licenses/BSD-3-Clause">3-Clause BSD</a>.
 </footer>
