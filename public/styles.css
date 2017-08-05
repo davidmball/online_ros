@@ -64,3 +64,24 @@ div.tab-frame input:nth-of-type(3):checked ~ .tab:nth-of-type(3),
 div.tab-frame input:nth-of-type(4):checked ~ .tab:nth-of-type(4),
 div.tab-frame input:nth-of-type(5):checked ~ .tab:nth-of-type(5),
 div.tab-frame input:nth-of-type(6):checked ~ .tab:nth-of-type(6){ display:block;}
+
+
+/* The same font as for github */
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 14px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 20px;
+  margin: 0;
+}
+
+footer {
+  position: fixed;
+  text-align: center;
+  bottom: 0px;
+  width: 100%;
+  height: 40px;
+  background-color: 0xFAFAFA;
+}
