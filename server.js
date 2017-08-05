@@ -28,6 +28,24 @@ var index_example_list = [];
 var index_example_list2 = [];
 var first = true;
 
+var html_footer_file;
+var html_header_file;
+var html_head_file;
+
+
+fs.readFile('html_footer.html', 'utf8', function(err, data) {
+  if (err) throw err;
+  html_footer_file = data;
+});
+fs.readFile('html_header.html', 'utf8', function(err, data) {
+  if (err) throw err;
+  html_header_file = data;
+});
+fs.readFile('html_head.html', 'utf8', function(err, data) {
+  if (err) throw err;
+  html_head_file = data;
+});
+
 /**
  * Runs at the start to read, process and store all of the example files.
  */
@@ -76,6 +94,15 @@ io.on('connection', function(socket){
   console.log('a user connected');
 });
 
+function replace_templates(data) {
+  data = data.toString().replace(/\{\{host_name\}\}/g, host);
+  data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port);
+  data = data.toString().replace(/\{\{html_footer\}\}/g, html_footer_file);
+  data = data.toString().replace(/\{\{html_header\}\}/g, html_header_file);
+  data = data.toString().replace(/\{\{html_head\}\}/g, html_head_file);
+  return data;
+};
+
 /**
  * This returns the example page with the rosbridge url and port set.
  */
@@ -95,12 +122,45 @@ app.get('/example.html', function (req, res) {
               res.contentType('text/html');
               data = data.toString().replace(/\{\{host_name\}\}/g, host);
               data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port);
-              res.send(data);
+              res.send(replace_templates(data));
           }
       });
     }
 });
 
+app.get('/index.html', function (req, res) {
+  // TODO: This reads the file everytime. We should cache it here.
+  fs.readFile(__dirname + "/index.html", function(err, data) {
+       if (err) {
+           res.send(404);
+       } else {
+           res.contentType('text/html');
+           res.send(replace_templates(data));
+      }
+  });
+});
+app.get('/contribute.html', function (req, res) {
+  // TODO: This reads the file everytime. We should cache it here.
+  fs.readFile(__dirname + "/contribute.html", function(err, data) {
+       if (err) {
+           res.send(404);
+       } else {
+           res.contentType('text/html');
+           res.send(replace_templates(data));
+      }
+  });
+});
+app.get('/about.html', function (req, res) {
+  // TODO: This reads the file everytime. We should cache it here.
+  fs.readFile(__dirname + "/about.html", function(err, data) {
+       if (err) {
+           res.send(404);
+       } else {
+           res.contentType('text/html');
+           res.send(replace_templates(data));
+      }
+  });
+});
 
 /**
  * This returns the code / other files for a particular example and is

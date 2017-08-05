@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+{{html_head}}
+  <body>
+
+<script type='text/javascript'>
+
+var app = angular.module("app", []);
+app.controller("ListController", ["$scope", "$http", function ($scope, $http) {
+
+      $http.get('/get_example_list')
+      .then(
+      function (response) {
+        console.log(response.data);
+          $scope.Members = response.data;
+      },
+      function (response) {
+        console.log("failure");
+      }
+  );
+}]);
+
+app.filter('remove_array', function() {
+  return function(val) {
+     var newval = JSON.stringify(val);
+     var reg = newval.replace(/[\[\]"]/g, '');
+     return reg;
+  };
+});
+
+</script>
+
+{{html_header}}
+
+  <div id="index_intro_text">
+    View, edit, compile and run ROS example code in your browser for free.</br>
+  </div>
+  <div ng-app="app" ng-controller="ListController">
+
+    <div id="searchbox_div">
+      <input id="searchbox" type="text" placeholder="Start typing here to search for an example..." ng-model="allKeyword" />
+    </div>
+    </br>
+    <hr>
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Packages</th>
+            <th>Tags</th>
+            <th>Version</th>
+        </tr>
+        <tr ng-repeat="member in Members | filter: allKeyword">
+            <td><a href="example.html?name={{member[0].package.name | remove_array}}">{{member[1].example.title | remove_array}}</a></td>
+            <td>{{member[0].package.description | remove_array}}</td>
+            <td>{{member[0].package.run_depend | remove_array}}</td>
+            <td>{{member[1].example.tag | remove_array}}</td>
+            <td>{{member[1].example.ros_version | remove_array}}</td>
+        </tr>
+    </table>
+   {{html_footer}}
+  </body>
+
+</html>

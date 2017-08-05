@@ -1,10 +1,3 @@
-body {
-  background-color: #FAFAFA;
-}
-
-footer {
-  background-color: #FAFAFA;
-}
 
 /* The navigation bar */
 .navbar {
@@ -13,6 +6,11 @@ footer {
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
     width: 100%; /* Full width */
+    font-size: 14px;
+}
+
+#title {
+  font-size: 24px;
 }
 
 /* Links inside the navbar */
@@ -65,9 +63,28 @@ div.tab-frame input:nth-of-type(4):checked ~ .tab:nth-of-type(4),
 div.tab-frame input:nth-of-type(5):checked ~ .tab:nth-of-type(5),
 div.tab-frame input:nth-of-type(6):checked ~ .tab:nth-of-type(6){ display:block;}
 
+#index_intro_text {
+  text-align: center;
+  font-size: 18px;
+  width: 100%;
+  padding-top: 60px;
+}
+
+#searchbox_div {
+  text-align: center;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 0px;
+}
+
+#searchbox {
+	font-size: 18px;
+  width: 400px;
+}
 
 /* The same font as for github */
 body {
+  background-color: #FAFAFA;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	font-size: 14px;
 	font-style: normal;
@@ -78,6 +95,7 @@ body {
 }
 
 footer {
+  background-color: #FAFAFA;
   position: fixed;
   text-align: center;
   bottom: 0px;
