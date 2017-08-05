@@ -185,10 +185,15 @@ function get_ros_details() {
     sel.options.length = 0;
     for (var topic in topics)
     {
-      var opt = document.createElement('option');
-      opt.innerHTML = topics[topic];
-      opt.value = topics[topic];
-      sel.appendChild(opt);
+      // TODO: Also work out a way to remove the tf's that appear ... but only if they shouldn't!
+      // This might need to become a user configurable parameter.
+      if (topics[topic].indexOf('tf2_web_republisher') == -1)
+      {
+        var opt = document.createElement('option');
+        opt.innerHTML = topics[topic];
+        opt.value = topics[topic];
+        sel.appendChild(opt);
+      }
     }
     sel.value = selected_topic_name;
   });
@@ -219,10 +224,13 @@ function get_ros_details() {
     sel.options.length = 0;
     for (var param in params)
     {
-      var opt = document.createElement('option');
-      opt.innerHTML = params[param];
-      opt.value = params[param];
-      sel.appendChild(opt);
+      if (params[param].indexOf('rosbridge_websocket') == -1)
+      {
+        var opt = document.createElement('option');
+        opt.innerHTML = params[param];
+        opt.value = params[param];
+        sel.appendChild(opt);
+      }
     }
   });
 }
