@@ -16,7 +16,7 @@
   <select name="files" id="file_list" size="3" onchange="file_list_select();"></select>
 
   <div id="editor"></div>
-      <input type="button" value="Compile & Run" id="compile"> Command: <b id="run_cmd"></b>
+  <input type="button" value="Compile & Run" id="compile"> Command: <b id="run_cmd"></b>
 </div>
 
 <div style="float: right; width: 50%" class="feedback">
@@ -42,7 +42,11 @@
        <select name="nodes" id="node_list" size="5" onchange="nodes_list_select();"></select>
     </div>
     <div class="tab">
-       <select name="params" id="param_list" size="5" onchange="param_list_select();"></select>
+       <select name="params" id="param_list" size="10" onchange="param_list_select();"></select>
+       <br>
+       <textarea id="show_param"></textarea>
+       <br>
+       <input type="button" value="Set Param" id="set_param">
     </div>
     <div class="tab">
       <div id="roslib_viewer"></div>
@@ -131,6 +135,7 @@ ros.on('close', function() {
 });
 
 var selected_topic_name;
+var selected_param_name;
 var topic_listener;
 
 function set_topic(topic_name) {
@@ -169,14 +174,35 @@ function set_topic(topic_name) {
 function topic_list_select() {
   var sel = document.getElementById("topic_list");
   var sel_val = sel.options[sel.selectedIndex].value;
-  console.log("topic list select " + sel_val);
   set_topic(sel_val);
+}
+
+var roslib_param;
+function set_param(param) {
+  selected_param_name = param;
+  if (typeof roslib_param != "undefined") {
+    delete roslib_param;
+  }
+  roslib_param = new ROSLIB.Param({
+    ros: ros,
+    name: selected_param_name
+  });
+}
+
+function param_list_select() {
+  var sel = document.getElementById("param_list");
+  var sel_val = sel.options[sel.selectedIndex].value;
+  set_param(sel_val);
+  roslib_param.get(function(value) {
+    document.getElementById("show_param").value = value;
+  });
 }
 
 /**
  * Gets and updates the list of ROS topics, nodes, services, and parameters.
  * This is repeatidly called at an interval whilst the ROS bridge is connected.
  * TODO: It would be much better if this was pushed to us when a change happens.
+ * At the least we could store the callback values and check if they have changed.
  */
 function get_ros_details() {
   ros.getTopics(function(topics) {
@@ -224,13 +250,18 @@ function get_ros_details() {
     sel.options.length = 0;
     for (var param in params)
     {
-      if (params[param].indexOf('rosbridge_websocket') == -1)
+      if (params[param].indexOf('rosbridge_websocket') == -1 &&
+          params[param].indexOf('rosapi') == -1)
       {
         var opt = document.createElement('option');
         opt.innerHTML = params[param];
         opt.value = params[param];
         sel.appendChild(opt);
       }
+    }
+    if (typeof selected_param_name != "undefined")
+    {
+      sel.value = selected_param_name;
     }
   });
 }

@@ -43,22 +43,18 @@ app.filter('remove_array', function() {
     </div>
     </br>
     <hr>
-    <table class="table">
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Packages</th>
-            <th>Tags</th>
-            <th>Version</th>
-        </tr>
-        <tr ng-repeat="member in Members | filter: allKeyword">
-            <td><a href="example.html?name={{member[0].package.name | remove_array}}">{{member[1].example.title | remove_array}}</a></td>
-            <td>{{member[0].package.description | remove_array}}</td>
-            <td>{{member[0].package.run_depend | remove_array}}</td>
-            <td>{{member[1].example.tag | remove_array}}</td>
-            <td>{{member[1].example.ros_version | remove_array}}</td>
-        </tr>
-    </table>
+      <div ng-repeat="member in Members | filter: allKeyword">
+        <div class="card">
+            <a href="example.html?name={{member[0].package.name | remove_array}}"><span class="link-spanner"></span></a>
+            <b><span style="font-size: 1.4em;"> {{member[1].example.title | remove_array}}</span></b>
+                 <i>(tags: {{member[1].example.tag | remove_array}})</i>
+            <span style="float: right">{{member[1].example.ros_version | remove_array}}</span></br>
+            {{member[0].package.description | remove_array}}</br></br>
+            Packages: {{member[0].package.run_depend | remove_array}}
+
+
+        </div>
+      </div>
    {{html_footer}}
   </body>
 

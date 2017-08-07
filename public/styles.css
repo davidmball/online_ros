@@ -63,6 +63,7 @@ div.tab-frame input:nth-of-type(4):checked ~ .tab:nth-of-type(4),
 div.tab-frame input:nth-of-type(5):checked ~ .tab:nth-of-type(5),
 div.tab-frame input:nth-of-type(6):checked ~ .tab:nth-of-type(6){ display:block;}
 
+/* index page */
 #index_intro_text {
   text-align: center;
   font-size: 18px;
@@ -81,6 +82,50 @@ div.tab-frame input:nth-of-type(6):checked ~ .tab:nth-of-type(6){ display:block;
 	font-size: 18px;
   width: 400px;
 }
+
+.card {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left:auto;
+    margin-right:auto;
+    bottom: 0px;
+    width: 700px;
+    height: 80px;
+    transition: 0.3s;
+    padding: 10px 10px;
+    position:relative;
+    background-color: #FFFFFF;
+}
+.link-spanner{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left: 0;
+  z-index: 1;
+
+  /* edit: fixes overlap error in IE7/8,
+     make sure you have an empty gif
+  background-image: url('empty.gif');*/
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+
+/* example.html */
+#set_param {
+  display: block;
+}
+#show_param {
+  width: 200px;
+  height: 20px;
+}
+
 
 /* The same font as for github */
 body {

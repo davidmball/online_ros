@@ -128,38 +128,55 @@ app.get('/example.html', function (req, res) {
     }
 });
 
+var index_file, contribute_file, about_file;
 app.get('/index.html', function (req, res) {
-  // TODO: This reads the file everytime. We should cache it here.
-  fs.readFile(__dirname + "/index.html", function(err, data) {
-       if (err) {
-           res.send(404);
-       } else {
-           res.contentType('text/html');
-           res.send(replace_templates(data));
+  if (typeof index_file == 'undefined') {
+    fs.readFile(__dirname + "/index.html", function(err, data) {
+      if (err) {
+        res.send(404);
+      } else {
+         index_file = replace_templates(data);
+         res.contentType('text/html');
+         res.send(index_file);
       }
-  });
+    });
+  } else {
+    res.contentType('text/html');
+    res.send(index_file);
+  }
 });
+
 app.get('/contribute.html', function (req, res) {
-  // TODO: This reads the file everytime. We should cache it here.
-  fs.readFile(__dirname + "/contribute.html", function(err, data) {
-       if (err) {
-           res.send(404);
-       } else {
-           res.contentType('text/html');
-           res.send(replace_templates(data));
+  if (typeof contribute_file == 'undefined') {
+    fs.readFile(__dirname + "/contribute.html", function(err, data) {
+      if (err) {
+        res.send(404);
+      } else {
+         contribute_file = replace_templates(data);
+         res.contentType('text/html');
+         res.send(contribute_file);
       }
-  });
+    });
+  } else {
+    res.contentType('text/html');
+    res.send(contribute_file);
+  }
 });
 app.get('/about.html', function (req, res) {
-  // TODO: This reads the file everytime. We should cache it here.
-  fs.readFile(__dirname + "/about.html", function(err, data) {
-       if (err) {
-           res.send(404);
-       } else {
-           res.contentType('text/html');
-           res.send(replace_templates(data));
+  if (typeof about_file == 'undefined') {
+    fs.readFile(__dirname + "/about.html", function(err, data) {
+      if (err) {
+        res.send(404);
+      } else {
+         about_file = replace_templates(data);
+         res.contentType('text/html');
+         res.send(about_file);
       }
-  });
+    });
+  } else {
+    res.contentType('text/html');
+    res.send(about_file);
+  }
 });
 
 /**
