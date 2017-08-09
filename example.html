@@ -280,63 +280,32 @@ $(document).ready(function(){
 
 
 var files = {};
-var editor = ace.edit("editor");
-editor.setTheme("ace/theme/chrome");
-var EditSession = ace.require("ace/edit_session").EditSession;
+var editor;
+var EditSession;
 var editor_sessions = {};
 
 var example_name = location.search.split('name=')[1];
-
+var parsed_data;
 $.get("/get_files?name=" + example_name, function (data) {
 
   // parse the data into the files for the editor and the general example information
-   var parsed_data = JSON.parse(data);
-   files = parsed_data[0];
-   example_info = parsed_data[1];
-
-   // load each file into its own editor
-   var sel = document.getElementById('file_list');
-   for (var filename in files)
-   {
-     var opt = document.createElement('option');
-     opt.value = filename;
-     opt.innerHTML = filename;
-     sel.appendChild(opt);
-     var filename_extension = filename.split('.').pop();
-     editor_sessions[filename] = new EditSession(filename);
-     if (filename_extension == 'cpp' || filename_extension == 'c')
-          editor_sessions[filename].setMode("ace/mode/c_cpp");
-     else if (filename_extension == 'xml')
-          editor_sessions[filename].setMode("ace/mode/xml");
-     else
-          editor_sessions[filename].setMode("ace/mode/text");
-     editor_sessions[filename].setValue(files[filename], -1);
-   }
-
-   // set the initial file for editing
-   // TODO: Test if this is set / valid
-   editor.setSession(editor_sessions[example_info.example.start_file]);
-   sel.value = example_info.example.start_file;
-
-   // set other parts of the page
-   document.getElementById("run_cmd").innerHTML = example_info.example.run_cmd;
-   document.getElementById("example_title").innerHTML = example_info.example.title;
-   document.getElementById("description").innerHTML = example_info.example.description;
-   document.getElementById("tab_" + example_info.example.feedback_top[0].tab).checked = true;
-
+   parsed_data  = JSON.parse(data);
 });
+
+
 
 
 function file_list_select() {
   var sel = document.getElementById("file_list");
   var sel_val = sel.options[sel.selectedIndex].value;
   editor.setSession(editor_sessions[sel_val]);
+  /*
   if (sel_val == 'CMakeLists.txt' || sel_val == 'package.xml')
   {
     editor.setReadOnly(true);
   } else {
     editor.setReadOnly(false);
-  }
+  }*/
 }
 
 
@@ -365,7 +334,71 @@ $('#compile').on('click', function() {
   });
 });
 
+Y({
+  db: {
+    name: 'memory'
+  },
+  connector: {
+    name: 'websockets-client',
+    room: 'ace-example4',
+    url: 'http://localhost:1234'
+  },
+  sourceDir: '/bower_components',
+  share: {
+    ace: 'Text' // y.share.textarea is of type Y.Text
+  }
+}).then(function (y) {
+  window.yAce = y
 
+  // bind the textarea to a shared text element
+editor = ace.edit("editor");
+editor.setTheme("ace/theme/chrome");
+y.share.ace.bindAce(editor);
+
+//  editor.setValue("AAAA", -1);
+
+
+EditSession = ace.require("ace/edit_session").EditSession;
+
+files = parsed_data[0];
+example_info = parsed_data[1];
+
+// load each file into its own editor
+var sel = document.getElementById('file_list');
+for (var filename in files)
+{
+  var opt = document.createElement('option');
+  opt.value = filename;
+  opt.innerHTML = filename;
+  sel.appendChild(opt);
+  var filename_extension = filename.split('.').pop();
+  editor_sessions[filename] = new EditSession(filename);
+  if (filename_extension == 'cpp' || filename_extension == 'c')
+       editor_sessions[filename].setMode("ace/mode/c_cpp");
+  else if (filename_extension == 'xml')
+       editor_sessions[filename].setMode("ace/mode/xml");
+  else
+       editor_sessions[filename].setMode("ace/mode/text");
+  //editor_sessions[filename].setValue(files[filename], -1);
+}
+
+// set the initial file for editing
+// TODO: Test if this is set / valid
+editor.setSession(editor_sessions[example_info.example.start_file]);
+sel.value = example_info.example.start_file;
+
+// set other parts of the page
+document.getElementById("run_cmd").innerHTML = example_info.example.run_cmd;
+document.getElementById("example_title").innerHTML = example_info.example.title;
+document.getElementById("description").innerHTML = example_info.example.description;
+document.getElementById("tab_" + example_info.example.feedback_top[0].tab).checked = true;
+
+
+
+  /*
+
+  */
+})
 </script>
 
 {{html_footer}}
