@@ -55,6 +55,12 @@ Or on a production system at the moment to get access to port 80.
 sudo -E bash -c '/usr/local/node/bin/node server.js'
 ```
 
+The docker container is built automatically when there is a change to the dockerfile on master in github.
+If you want to test building locally then use within the dockerfile/kinetic directory
+```
+docker build -t ros-online-kinetic .
+```
+
 ### License
 
 The code is released under the BSD license.
