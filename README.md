@@ -1,13 +1,11 @@
 By Working Example
 ==================
 
-This is a web system where the user can compile, edit and run working example code.
+This is a web system where the user can compile, edit and run working Robot Operating System (ROS) example code.
 
 This code is currently in a pre alpha, proof of concept state. Do not use in a production environment.
 
-At the moment this only targets Robot Operating System (ROS).
-
-The tutorials are located in a separate repository which you can get from here : .
+The tutorials are located in a separate repository described below.
 
 ### Install (alpha)
 
@@ -25,7 +23,10 @@ Docker is required to run the example code. For the Google compute engine I use 
 sudo apt-get install docker.io
 ```
 
-And get the docker container. This isn't public yet.
+And get the docker container.
+```
+docker pull davidmball/ros_online:kinetic
+```
 
 Also, you will need npm/nodejs. Note that for the Google compute engine I had to use these commands to install it.
 ```
@@ -56,7 +57,10 @@ sudo -E bash -c '/usr/local/node/bin/node server.js'
 ```
 
 The docker container is built automatically when there is a change to the dockerfile on master in github.
-If you want to test building locally then use within the dockerfile/kinetic directory
+
+### Other
+
+If you want to test building the docker image locally then change to the dockerfile/kinetic directory and type
 ```
 docker build -t ros-online-kinetic .
 ```

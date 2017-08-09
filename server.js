@@ -275,7 +275,7 @@ app.post('/compile', function(req, res)
   });
 
   console.log(run_cmd);
-  var args = ['15', docker_id, 'ros_workspace_rosbridge_tf2_web', compile_path + temp_dir  + '/', net_id, run_cmd];
+  var args = ['15', docker_id, 'davidmball/ros_online:kinetic', compile_path + temp_dir  + '/', net_id, run_cmd];
   var ls = spawn(command, args);
 
   // send the compilee and executable stdout/err output to the user's browserzs
