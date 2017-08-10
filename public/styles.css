@@ -69,6 +69,7 @@ div.tab-frame input:nth-of-type(6):checked ~ .tab:nth-of-type(6){ display:block;
   font-size: 18px;
   width: 100%;
   padding-top: 60px;
+  color: #0000BB;
 }
 
 #searchbox_div {
