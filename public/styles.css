@@ -1,3 +1,4 @@
+html,body { height:100%; }
 
 /* The navigation bar */
 .navbar {
@@ -23,29 +24,45 @@
     text-decoration: none;
 }
 
+/* Main content */
+.main {
+    height: 100%;
+}
 
 #editor {
-    height: 400px;
-    margin: 20px 20px 20px 0px;
+    position: absolute;
+    width: 50%;
+    top: 200px;
+    bottom: 100px;
     border: 1px solid #DDD;
     border-radius: 4px;
     border-bottom-right-radius: 0px;
-    margin-top: 5px;
 }
 
-/* Main content */
-.main {
-    margin-top: 50px; /* Add a top margin to avoid content overlay */
+#main_header {
+    padding-left: 10px;
+    position: relative;
+    top: 50px;
+    width: 100%;
+}
+
+#main_footer {
+    padding-left: 10px;
+    width: 50%;
+    position: fixed;
+    bottom: 40px;
+    height: 50px;
 }
 
 /* feedback content */
 .feedback {
     margin-top: 100px; /* Add a top margin to avoid content overlay */
+    width: 100%;
 }
 
 .feedback textarea {
     height: 200px;
-    width: 450px;
+    width: 100%;
     font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
 
@@ -126,7 +143,6 @@ div.tab-frame input:nth-of-type(6):checked ~ .tab:nth-of-type(6){ display:block;
   width: 200px;
   height: 20px;
 }
-
 
 /* The same font as for github */
 body {

@@ -9,14 +9,17 @@
 {{html_header}}
 
 <div style="float: left; width: 50%" class="main">
-
-  <h1 id="example_title"></h1>
-  <p id="description"></p>
-
-  <select name="files" id="file_list" size="3" onchange="file_list_select();"></select>
+  <div id="main_header">
+    <h1 id="example_title"></h1>
+    <p id="description"></p>
+    <select name="files" id="file_list" size="3" onchange="file_list_select();"></select>
+  </div>
 
   <div id="editor"></div>
-  <input type="button" value="Compile & Run" id="compile"> Command: <b id="run_cmd"></b>
+  
+  <div id="main_footer">
+    <input type="button" value="Compile & Run" id="compile"> Command: <b id="run_cmd"></b>
+  </div>
 </div>
 
 <div style="float: right; width: 50%" class="feedback">
