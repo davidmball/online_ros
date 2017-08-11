@@ -155,55 +155,36 @@ app.get('/example.html', function (req, res) {
   }
 })
 
-// TODO: The next functions should share code ...
-app.get('/index.html', function (req, res) {
-  if (typeof indexFile === 'undefined') {
-    fs.readFile(path.join(__dirname, '/index.html'), function (err, data) {
+function cacheFile(filename, file, res) {
+  if (typeof file === 'undefined') {
+    fs.readFile(path.join(__dirname, filename), function (err, data) {
       if (err) {
         res.send(404)
       } else {
-        indexFile = replaceTemplates(data)
+        fileData = replaceTemplates(data)
         res.contentType('text/html')
-        res.send(indexFile)
+        res.send(fileData)
+        return fileData
       }
     })
   } else {
     res.contentType('text/html')
-    res.send(indexFile)
+    res.send(file)
+    // TODO: file is already set so we shouldn't have to return anything here.
+    return file
   }
+}
+
+app.get('/index.html', function (req, res) {
+  indexFile = cacheFile('/index.html', indexFile, res)
 })
 
 app.get('/contribute.html', function (req, res) {
-  if (typeof contributeFile === 'undefined') {
-    fs.readFile(path.join(__dirname, '/contribute.html'), function (err, data) {
-      if (err) {
-        res.send(404)
-      } else {
-        contributeFile = replaceTemplates(data)
-        res.contentType('text/html')
-        res.send(contributeFile)
-      }
-    })
-  } else {
-    res.contentType('text/html')
-    res.send(contributeFile)
-  }
+  contributeFile = cacheFile('/contribute.html', contributeFile, res)
 })
+
 app.get('/about.html', function (req, res) {
-  if (typeof aboutFile === 'undefined') {
-    fs.readFile(path.join(__dirname, '/about.html'), function (err, data) {
-      if (err) {
-        res.send(404)
-      } else {
-        aboutFile = replaceTemplates(data)
-        res.contentType('text/html')
-        res.send(aboutFile)
-      }
-    })
-  } else {
-    res.contentType('text/html')
-    res.send(aboutFile)
-  }
+  aboutFile = cacheFile('/about.html', aboutFile, res)
 })
 
 /**
