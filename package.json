@@ -21,6 +21,7 @@
     "minimist": "^1.2.0",
     "node-dir": "^0.1.17",
     "socket.io": "latest",
+    "unique-random-at-depth": "^1.0.0",
     "xml2js": "^0.4.17"
   },
   "repository": {

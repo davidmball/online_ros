@@ -7,15 +7,10 @@ image=$3
 ws_dir=$4
 net=$5
 run_cmd=$6
-shift
-shift
-shift
-shift
-shift
-shift
+external_port=$7
 
 # run the deteched docker container
-cont=$(docker run -d -p 9090:9090 \
+cont=$(docker run -d -p $external_port:9090 \
   -v "$ws_dir":/home/root/catkin_ws/src -w /home/root/catkin_ws/ \
   --name "$name" "$image" \
   /bin/sh -c "roslaunch rosbridge_server rosbridge_websocket.launch \

@@ -9,6 +9,7 @@ const crypto = require("crypto");
 const config = require('config');
 const parseString = require('xml2js').parseString;
 const helmet = require('helmet');
+const uniqueRandomAtDepth = require('unique-random-at-depth');
 
 var app = express();
 app.use(helmet());
@@ -20,8 +21,11 @@ var example_path = config.get('example_path');
 var compile_path = config.get('compile_path');
 var host_port = config.get('host_port');
 var host = config.get('host');
-var rosbridge_port = config.get('rosbridge_port');
 
+// Within the ephemeral port range
+// I'll have other problems before I run out of these ports :)
+const min_rosbridge_port = 50000;
+const max_rosbridge_port = 59999;
 
 var files = [];
 var index_example_list = [];
@@ -95,8 +99,6 @@ io.on('connection', function(socket){
 });
 
 function replace_templates(data) {
-  data = data.toString().replace(/\{\{host_name\}\}/g, host);
-  data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port);
   data = data.toString().replace(/\{\{html_footer\}\}/g, html_footer_file);
   data = data.toString().replace(/\{\{html_header\}\}/g, html_header_file);
   data = data.toString().replace(/\{\{html_head\}\}/g, html_head_file);
@@ -120,8 +122,10 @@ app.get('/example.html', function (req, res) {
               res.send(404);
           } else {
               res.contentType('text/html');
+              // the last param is the repeat depth
+              var rosbridge_port = uniqueRandomAtDepth(min_rosbridge_port, max_rosbridge_port, 5000);
               data = data.toString().replace(/\{\{host_name\}\}/g, host);
-              data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port);
+              data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridge_port());
               res.send(replace_templates(data));
           }
       });
@@ -269,13 +273,14 @@ app.post('/compile', function(req, res)
   var docker_id = crypto.randomBytes(16).toString("hex");
   var net_id = crypto.randomBytes(16).toString("hex");
   var run_cmd = '';
+  var rosbridge_port = req.body.rosbridge_port;
 
   parseString(example_xml, function (err, result) {
       run_cmd = result.example.run_cmd;
   });
 
   console.log(run_cmd);
-  var args = ['15', docker_id, 'davidmball/ros_online:kinetic', compile_path + temp_dir  + '/', net_id, run_cmd];
+  var args = ['15', docker_id, 'davidmball/ros_online:kinetic', compile_path + temp_dir  + '/', net_id, run_cmd, rosbridge_port];
   var ls = spawn(command, args);
 
   // send the compilee and executable stdout/err output to the user's browserzs

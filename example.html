@@ -359,6 +359,7 @@ $('#compile').on('click', function() {
 
   var json = {
     code_files: code,
+    rosbridge_port: {{rosbridge_port}}
   };
 
   $.post("/compile?name=" + example_name, json, function(data, error, xhr) {
