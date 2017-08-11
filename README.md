@@ -58,6 +58,17 @@ sudo -E bash -c '/usr/local/node/bin/node server.js'
 
 The docker container is built automatically when there is a change to the dockerfile on master in github.
 
+### Contributing to the web site
+
+Pull requests are welcome. For consistent style use
+
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
+
+Run with
+```
+standard --fix
+```
+
 ### Other
 
 If you want to test building the docker image locally then change to the dockerfile/kinetic directory and type
