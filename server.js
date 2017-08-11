@@ -155,13 +155,16 @@ app.get('/example.html', function (req, res) {
   }
 })
 
-function cacheFile(filename, file, res) {
+/**
+ * This caches file to save reloading from disk.
+ */
+function cacheFile (filename, file, res) {
   if (typeof file === 'undefined') {
     fs.readFile(path.join(__dirname, filename), function (err, data) {
       if (err) {
         res.send(404)
       } else {
-        fileData = replaceTemplates(data)
+        var fileData = replaceTemplates(data)
         res.contentType('text/html')
         res.send(fileData)
         return fileData
