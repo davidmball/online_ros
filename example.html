@@ -10,15 +10,20 @@
 
 <div style="float: left; width: 50%" class="main">
   <div id="main_header">
-    <h1 id="example_title"></h1>
-    <p id="description"></p>
-    <select name="files" id="file_list" size="3" onchange="file_list_select();"></select>
+    <div id="example_title"></div>
+    <div id="description"></div>
+  </div>
+
+  <div id="main_files">
+    Files: <select name="files" id="file_list" size="1" onchange="file_list_select();"></select>
   </div>
 
   <div id="editor"></div>
-  
+
   <div id="main_footer">
-    <input type="button" value="Compile & Run" id="compile"> Command: <b id="run_cmd"></b>
+    <input type="button" value="Compile & Run" id="compile">
+  </br>
+  <span style="display: inline-block; padding-top: 4px;">Command: <b id="run_cmd"></b></span>
   </div>
 </div>
 
@@ -342,8 +347,14 @@ function file_list_select() {
   }
 }
 
+var runningCode = false;
 
 $('#compile').on('click', function() {
+  if (runningCode)
+    return;
+  runningCode = true;
+
+  document.getElementById("compile").style.background='#FF8C00';
   roslib_connected = false;
   if (!interval_active)
   {
@@ -366,6 +377,8 @@ $('#compile').on('click', function() {
   };
 
   $.post("/compile?name=" + example_name, json, function(data, error, xhr) {
+      document.getElementById("compile").style.background='#00FF00';
+      runningCode = false;
   });
 });
 
