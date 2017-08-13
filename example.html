@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
 
-
 {{html_head}}
 
-  <body onload="init()">
+<body onload="init()">
 
 {{html_header}}
 
@@ -27,39 +26,78 @@
   </div>
 </div>
 
-<div style="float: right; width: 50%" class="feedback">
-  <div class="tab-frame" id="feedback_top">
-    <input type="radio" checked name="tab" id="tab_terminal"><label for="tab_terminal">Terminal</label>
-    <input type="radio" name="tab" id="tab_topics"><label for="tab_topics">Topics</label>
-    <input type="radio" name="tab" id="tab_services"><label for="tab_services">Services</label>
-    <input type="radio" name="tab" id="tab_nodes"><label for="tab_nodes">Nodes</label>
-    <input type="radio" name="tab" id="tab_params"><label for="tab_params">Params</label>
-    <input type="radio" name="tab" id="tab_viz"><label for="tab_viz">Viewer</label>
+<div id="feedback" class="feedback">
+  <div class="tab-frame0" id="feedback0">
+    <input type="radio" checked name="tab0" id="tab_terminal0"><label for="tab_terminal0">Terminal</label>
+    <input type="radio" name="tab0" id="tab_topics0"><label for="tab_topics0">Topics</label>
+    <input type="radio" name="tab0" id="tab_services0"><label for="tab_services0">Services</label>
+    <input type="radio" name="tab0" id="tab_nodes0"><label for="tab_nodes0">Nodes</label>
+    <input type="radio" name="tab0" id="tab_params0"><label for="tab_params0">Params</label>
+    <input type="radio" name="tab0" id="tab_viz0"><label for="tab_viz0">Viewer</label>
 
-    <div class="tab">
+    <div class="tab0">
       <textarea id="show_terminal" readonly="readonly"></textarea>
     </div>
-    <div class="tab">
-      <select name="topics" id="topic_list" size="5" onchange="topic_list_select();"></select>
+    <div class="tab0">
+      <select name="topics" id="topic_list" size="1" onchange="topic_list_select();"></select>
+      </br>
       <textarea id="show_topic" readonly="readonly"></textarea>
     </div>
-    <div class="tab">
-      <select name="services" id="service_list" size="5" onchange="service_list_select();"></select>
+    <div class="tab0">
+      <select name="services" id="service_list" size="1" onchange="service_list_select();"></select>
     </div>
-    <div class="tab">
-       <select name="nodes" id="node_list" size="5" onchange="nodes_list_select();"></select>
+    <div class="tab0">
+       <select name="nodes" id="node_list" size="1" onchange="nodes_list_select();"></select>
     </div>
-    <div class="tab">
-       <select name="params" id="param_list" size="10" onchange="param_list_select();"></select>
+    <div class="tab0">
+       <select name="params" id="param_list" size="1" onchange="param_list_select();"></select>
        <br>
        <textarea id="show_param"></textarea>
        <br>
+       <br>
        <input type="button" value="Set Param" id="set_param">
     </div>
-    <div class="tab">
+    <div class="tab0">
       <div id="roslib_viewer"></div>
     </div>
   </div>
+
+
+
+    <div class="tab-frame1" id="feedback1">
+      <input type="radio" checked name="tab1" id="tab_terminal1"><label for="tab_terminal1">Terminal</label>
+      <input type="radio" name="tab1" id="tab_topics1"><label for="tab_topics1">Topics</label>
+      <input type="radio" name="tab1" id="tab_services1"><label for="tab_services1">Services</label>
+      <input type="radio" name="tab1" id="tab_nodes1"><label for="tab_nodes1">Nodes</label>
+      <input type="radio" name="tab1" id="tab_params1"><label for="tab_params1">Params</label>
+      <input type="radio" name="tab1" id="tab_viz1"><label for="tab_viz1">Viewer</label>
+
+      <div class="tab1">
+        <textarea id="show_terminal" readonly="readonly"></textarea>
+      </div>
+      <div class="tab1">
+        <select name="topics" id="topic_list" size="1" onchange="topic_list_select();"></select>
+        </br>
+        <textarea id="show_topic" readonly="readonly"></textarea>
+      </div>
+      <div class="tab1">
+        <select name="services" id="service_list" size="1" onchange="service_list_select();"></select>
+      </div>
+      <div class="tab1">
+         <select name="nodes" id="node_list" size="1" onchange="nodes_list_select();"></select>
+      </div>
+      <div class="tab1">
+         <select name="params" id="param_list" size="1" onchange="param_list_select();"></select>
+         <br>
+         <textarea id="show_param"></textarea>
+         <br>
+         <br>
+         <input type="button" value="Set Param" id="set_param">
+      </div>
+      <div class="tab1">
+        <div id="roslib_viewer"></div>
+      </div>
+    </div>
 
 
 </div>

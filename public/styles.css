@@ -83,30 +83,96 @@ html,body { height:100%; }
 }
 
 /* feedback content */
-.feedback {
-    margin-top: 100px; /* Add a top margin to avoid content overlay */
-    width: 100%;
+#feedback {
+  display: block;
+  float: right;
+  height:auto;
+  position:absolute;
+bottom:0;
+top:0;
+
+right:0;
+margin-top:65px;
+margin-bottom:40px;
+margin-right:5px;
+margin-left: 0px;
+width: 48%;
+
+
 }
 
 .feedback textarea {
-    height: 200px;
-    width: 100%;
-    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  position: absolute;
+  resize: none;
+ right: 0;
+ top: 0;
+ bottom: 0;
+ left: 0;
+  margin-right:0px;
+ margin-top: 30px;
+ margin-bottom: 0px;
+ margin-left: 0px;
+ width: 100%;
+     font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
+
+.feedback select {
+  width: 80%;
+}
+
+#feedback0 {
+  padding-top: 5px;
+  position: relative;
+  height: 48%;
+}
+#feedback1 {
+    padding-top: 5px;
+  position: relative;
+  height: 48%;
 }
 
 
 /* tabs */
-div.tab-frame input{ display:none;}
-div.tab-frame label{ display:block; float:left;padding:5px 10px; cursor:pointer}
-div.tab-frame input:checked + label{ background:black; color:white; cursor:default}
-div.tab-frame div.tab{ display:none; padding:5px 10px;clear:left}
+div.tab-frame0 input{ display:none;}
+div.tab-frame0 label{ display:block; float:left;padding:5px 10px; cursor:pointer}
+div.tab-frame0 input:checked + label{ background:black; color:white; cursor:default}
+div.tab-frame0 div.tab0{
+  display:none; padding:5px 10px;clear:left;  position: absolute; width: 95%;
+  margin-right:5px;
+ right: 0;
+ margin-top: 30px;
+ top: 0;
+ bottom: 0;
+ margin-bottom: 0;
+}
 
-div.tab-frame input:nth-of-type(1):checked ~ .tab:nth-of-type(1),
-div.tab-frame input:nth-of-type(2):checked ~ .tab:nth-of-type(2),
-div.tab-frame input:nth-of-type(3):checked ~ .tab:nth-of-type(3),
-div.tab-frame input:nth-of-type(4):checked ~ .tab:nth-of-type(4),
-div.tab-frame input:nth-of-type(5):checked ~ .tab:nth-of-type(5),
-div.tab-frame input:nth-of-type(6):checked ~ .tab:nth-of-type(6){ display:block;}
+div.tab-frame0 input:nth-of-type(1):checked ~ .tab0:nth-of-type(1),
+div.tab-frame0 input:nth-of-type(2):checked ~ .tab0:nth-of-type(2),
+div.tab-frame0 input:nth-of-type(3):checked ~ .tab0:nth-of-type(3),
+div.tab-frame0 input:nth-of-type(4):checked ~ .tab0:nth-of-type(4),
+div.tab-frame0 input:nth-of-type(5):checked ~ .tab0:nth-of-type(5),
+div.tab-frame0 input:nth-of-type(6):checked ~ .tab0:nth-of-type(6){ display:block;}
+
+div.tab-frame1 input{ display:none;}
+div.tab-frame1 label{ display:block; float:left;padding:5px 10px; cursor:pointer}
+div.tab-frame1 input:checked + label{ background:black; color:white; cursor:default}
+div.tab-frame1 div.tab1{
+  display:none; padding:5px 10px;clear:left;  position: absolute; width: 95%;
+  margin-right:5px;
+ right: 0;
+ margin-top: 30px;
+ top: 0;
+ bottom: 0;
+ margin-bottom: 0;
+}
+
+div.tab-frame1 input:nth-of-type(1):checked ~ .tab1:nth-of-type(1),
+div.tab-frame1 input:nth-of-type(2):checked ~ .tab1:nth-of-type(2),
+div.tab-frame1 input:nth-of-type(3):checked ~ .tab1:nth-of-type(3),
+div.tab-frame1 input:nth-of-type(4):checked ~ .tab1:nth-of-type(4),
+div.tab-frame1 input:nth-of-type(5):checked ~ .tab1:nth-of-type(5),
+div.tab-frame1 input:nth-of-type(6):checked ~ .tab1:nth-of-type(6){ display:block;}
+
 
 /* index page */
 #index_intro_text {
