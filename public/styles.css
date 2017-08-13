@@ -2,12 +2,12 @@ html,body { height:100%; }
 
 /* The navigation bar */
 .navbar {
-    overflow: hidden;
-    background-color: #101010;
-    position: fixed; /* Set the navbar to fixed position */
-    top: 0; /* Position the navbar at the top of the page */
-    width: 100%; /* Full width */
-    font-size: 14px;
+  overflow: hidden;
+  background-color: #101010;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+  font-size: 14px;
 }
 
 #title {
@@ -16,17 +16,17 @@ html,body { height:100%; }
 
 /* Links inside the navbar */
 .navbar a {
-    float: left;
-    display: block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
 }
 
 /* Main content */
 .main {
-    height: 100%;
+  height: 100%;
 }
 
 #file_list {
@@ -88,17 +88,14 @@ html,body { height:100%; }
   float: right;
   height:auto;
   position:absolute;
-bottom:0;
-top:0;
-
-right:0;
-margin-top:65px;
-margin-bottom:40px;
-margin-right:5px;
-margin-left: 0px;
-width: 48%;
-
-
+  bottom:0;
+  top:0;
+  right:0;
+  margin-top:65px;
+  margin-bottom:40px;
+  margin-right:5px;
+  margin-left: 0px;
+  width: 48%;
 }
 
 .feedback textarea {
@@ -126,19 +123,23 @@ width: 48%;
   height: 48%;
 }
 #feedback1 {
-    padding-top: 5px;
+  padding-top: 5px;
   position: relative;
   height: 48%;
 }
 
 
 /* tabs */
-div.tab-frame0 input{ display:none;}
-div.tab-frame0 label{ display:block; float:left;padding:5px 10px; cursor:pointer}
-div.tab-frame0 input:checked + label{ background:black; color:white; cursor:default}
-div.tab-frame0 div.tab0{
-  display:none; padding:5px 10px;clear:left;  position: absolute; width: 95%;
-  margin-right:5px;
+div.tab-frame0 input { display:none;}
+div.tab-frame0 label { display:block; float:left;padding:5px 10px; cursor:pointer}
+div.tab-frame0 input:checked + label { background:black; color:white; cursor:default}
+div.tab-frame0 div.tab0 {
+ display:none;
+ padding:5px 10px;
+ clear:left;
+ position: absolute;
+ width: 95%;
+ margin-right:5px;
  right: 0;
  margin-top: 30px;
  top: 0;
@@ -156,14 +157,18 @@ div.tab-frame0 input:nth-of-type(6):checked ~ .tab0:nth-of-type(6){ display:bloc
 div.tab-frame1 input{ display:none;}
 div.tab-frame1 label{ display:block; float:left;padding:5px 10px; cursor:pointer}
 div.tab-frame1 input:checked + label{ background:black; color:white; cursor:default}
-div.tab-frame1 div.tab1{
-  display:none; padding:5px 10px;clear:left;  position: absolute; width: 95%;
+div.tab-frame1 div.tab1 {
+  display:none;
+  padding:5px 10px;
+  clear:left;
+  position: absolute;
+  width: 95%;
   margin-right:5px;
- right: 0;
- margin-top: 30px;
- top: 0;
- bottom: 0;
- margin-bottom: 0;
+  right: 0;
+  margin-top: 30px;
+  top: 0;
+  bottom: 0;
+  margin-bottom: 0;
 }
 
 div.tab-frame1 input:nth-of-type(1):checked ~ .tab1:nth-of-type(1),
@@ -224,9 +229,7 @@ div.tab-frame1 input:nth-of-type(6):checked ~ .tab1:nth-of-type(6){ display:bloc
 }
 
 /* On mouse-over, add a deeper shadow */
-.card:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-}
+.card:hover { box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); }
 
 
 /* example.html */

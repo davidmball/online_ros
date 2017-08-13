@@ -36,29 +36,29 @@
     <input type="radio" name="tab0" id="tab_viz0"><label for="tab_viz0">Viewer</label>
 
     <div class="tab0">
-      <textarea id="show_terminal" readonly="readonly"></textarea>
+      <textarea id="show_terminal0" readonly="readonly"></textarea>
     </div>
     <div class="tab0">
-      <select name="topics" id="topic_list" size="1" onchange="topic_list_select();"></select>
+      <select name="topics" id="topic_list0" size="1" onchange="topic_list_select(this);"></select>
       </br>
-      <textarea id="show_topic" readonly="readonly"></textarea>
+      <textarea id="show_topic0" readonly="readonly"></textarea>
     </div>
     <div class="tab0">
-      <select name="services" id="service_list" size="1" onchange="service_list_select();"></select>
+      <select name="services" id="service_list0" size="1" onchange="service_list_select(this);"></select>
     </div>
     <div class="tab0">
-       <select name="nodes" id="node_list" size="1" onchange="nodes_list_select();"></select>
+       <select name="nodes" id="node_list0" size="1" onchange="nodes_list_select(this);"></select>
     </div>
     <div class="tab0">
-       <select name="params" id="param_list" size="1" onchange="param_list_select();"></select>
+       <select name="params" id="param_list0" size="1" onchange="param_list_select(this);"></select>
        <br>
-       <textarea id="show_param"></textarea>
+       <textarea id="show_param0"></textarea>
        <br>
        <br>
-       <input type="button" value="Set Param" id="set_param">
+       <input type="button" value="Set Param" id="set_param0">
     </div>
     <div class="tab0">
-      <div id="roslib_viewer"></div>
+      <div id="roslib_viewer0"></div>
     </div>
   </div>
 
@@ -73,29 +73,29 @@
       <input type="radio" name="tab1" id="tab_viz1"><label for="tab_viz1">Viewer</label>
 
       <div class="tab1">
-        <textarea id="show_terminal" readonly="readonly"></textarea>
+        <textarea id="show_terminal1" readonly="readonly"></textarea>
       </div>
       <div class="tab1">
-        <select name="topics" id="topic_list" size="1" onchange="topic_list_select();"></select>
+        <select name="topics" id="topic_list1" size="1" onchange="topic_list_select(this);"></select>
         </br>
-        <textarea id="show_topic" readonly="readonly"></textarea>
+        <textarea id="show_topic1" readonly="readonly"></textarea>
       </div>
       <div class="tab1">
-        <select name="services" id="service_list" size="1" onchange="service_list_select();"></select>
+        <select name="services" id="service_list1" size="1" onchange="service_list_select(this);"></select>
       </div>
       <div class="tab1">
-         <select name="nodes" id="node_list" size="1" onchange="nodes_list_select();"></select>
+         <select name="nodes" id="node_list1" size="1" onchange="nodes_list_select(this);"></select>
       </div>
       <div class="tab1">
-         <select name="params" id="param_list" size="1" onchange="param_list_select();"></select>
+         <select name="params" id="param_list1" size="1" onchange="param_list_select(this);"></select>
          <br>
-         <textarea id="show_param"></textarea>
+         <textarea id="show_param1"></textarea>
          <br>
          <br>
-         <input type="button" value="Set Param" id="set_param">
+         <input type="button" value="Set Param" id="set_param1">
       </div>
       <div class="tab1">
-        <div id="roslib_viewer"></div>
+        <div id="roslib_viewer1"></div>
       </div>
     </div>
 
@@ -184,7 +184,7 @@ var selected_topic_name;
 var selected_param_name;
 var topic_listener;
 
-function set_topic(topic_name) {
+function set_topic(topic_name, id) {
   selected_topic_name = topic_name;
   var topic_type;
   if (topic_name == '/rosout' || topic_name == 'rosout_agg') {
@@ -195,11 +195,11 @@ function set_topic(topic_name) {
     // hope this works.
     topic_type = 'std_msgs/String';
   }
-  console.log("set topic " + topic_type);
+
   if (typeof topic_listener != "undefined") {
     topic_listener.unsubscribe();
     delete topic_listener;
-    document.getElementById("show_topic").value = '';
+    document.getElementById("show_topic" + id).value = '';
   }
 
     // TODO: Why do I need to set the messagetype for the listener?
@@ -211,16 +211,15 @@ function set_topic(topic_name) {
 
   topic_listener.subscribe(function(message) {
     // set 2 space tabs and get rid of the ""
+    console.log("topic_listener.subscribe" + id)
     message = JSON.stringify(message, null, 2).replace(/\"([^(\")"]+)\":/g,"$1:");
-    document.getElementById("show_topic").value += message + '\r';
-    document.getElementById("show_topic").scrollTop = document.getElementById("show_topic").scrollHeight;
+    document.getElementById("show_topic" + id).value += message + '\r';
+    document.getElementById("show_topic" + id).scrollTop = document.getElementById("show_topic" + id).scrollHeight;
   });
 }
 
-function topic_list_select() {
-  var sel = document.getElementById("topic_list");
-  var sel_val = sel.options[sel.selectedIndex].value;
-  set_topic(sel_val);
+function topic_list_select(element) {
+  set_topic(element.value, element.id.slice(-1));
 }
 
 var roslib_param;
@@ -253,61 +252,73 @@ function param_list_select() {
 function get_ros_details() {
   ros.getTopics(function(topics) {
     // TODO: It's a shame this doesn't also return the message types.
-    var sel = document.getElementById('topic_list');
-    sel.options.length = 0;
-    for (var topic in topics)
+    for (var id = 0; id < 2; id++)
     {
-      // TODO: Also work out a way to remove the tf's that appear ... but only if they shouldn't!
-      // This might need to become a user configurable parameter.
-      if (topics[topic].indexOf('tf2_web_republisher') == -1)
+      var sel = document.getElementById('topic_list' + id);
+      sel.options.length = 0;
+      for (var topic in topics)
       {
-        var opt = document.createElement('option');
-        opt.innerHTML = topics[topic];
-        opt.value = topics[topic];
-        sel.appendChild(opt);
+        // TODO: Also work out a way to remove the tf's that appear ... but only if they shouldn't!
+        // This might need to become a user configurable parameter.
+        if (topics[topic].indexOf('tf2_web_republisher') == -1)
+        {
+          var opt = document.createElement('option');
+          opt.innerHTML = topics[topic];
+          opt.value = topics[topic];
+          sel.appendChild(opt);
+        }
       }
+      sel.value = selected_topic_name;
     }
-    sel.value = selected_topic_name;
   });
   ros.getNodes(function(nodes) {
-    var sel = document.getElementById('node_list');
-    sel.options.length = 0;
-    for (var node in nodes)
+    for (var id = 0; id < 2; id++)
     {
-      var opt = document.createElement('option');
-      opt.innerHTML = nodes[node];
-      opt.value = nodes[node];
-      sel.appendChild(opt);
+      var sel = document.getElementById('node_list' + id);
+      sel.options.length = 0;
+      for (var node in nodes)
+      {
+        var opt = document.createElement('option');
+        opt.innerHTML = nodes[node];
+        opt.value = nodes[node];
+        sel.appendChild(opt);
+      }
     }
   });
   ros.getServices(function(services) {
-    var sel = document.getElementById('service_list');
-    sel.options.length = 0;
-    for (var service in services)
+    for (var id = 0; id < 2; id++)
     {
-      var opt = document.createElement('option');
-      opt.innerHTML = services[service];
-      opt.value = services[service];
-      sel.appendChild(opt);
-    }
-  });
-  ros.getParams(function(params) {
-    var sel = document.getElementById('param_list');
-    sel.options.length = 0;
-    for (var param in params)
-    {
-      if (params[param].indexOf('rosbridge_websocket') == -1 &&
-          params[param].indexOf('rosapi') == -1)
+      var sel = document.getElementById('service_list' + id);
+      sel.options.length = 0;
+      for (var service in services)
       {
         var opt = document.createElement('option');
-        opt.innerHTML = params[param];
-        opt.value = params[param];
+        opt.innerHTML = services[service];
+        opt.value = services[service];
         sel.appendChild(opt);
       }
-    }
-    if (typeof selected_param_name != "undefined")
+   }
+  });
+  ros.getParams(function(params) {
+    for (var id = 0; id < 2; id++)
     {
-      sel.value = selected_param_name;
+      var sel = document.getElementById('param_list' + id);
+      sel.options.length = 0;
+      for (var param in params)
+      {
+        if (params[param].indexOf('rosbridge_websocket') == -1 &&
+            params[param].indexOf('rosapi') == -1)
+        {
+          var opt = document.createElement('option');
+          opt.innerHTML = params[param];
+          opt.value = params[param];
+          sel.appendChild(opt);
+        }
+      }
+      if (typeof selected_param_name != "undefined")
+      {
+        sel.value = selected_param_name;
+      }
     }
   });
 }
@@ -318,8 +329,11 @@ function get_ros_details() {
 $(document).ready(function(){
   var socket = io();
   socket.on('compile_output',function(msg){
-  document.getElementById("show_terminal").value += msg;
-  document.getElementById("show_terminal").scrollTop = document.getElementById("show_terminal").scrollHeight
+    for (var id = 0; id < 2; id++)
+    {
+      document.getElementById("show_terminal" + id).value += msg;
+      document.getElementById("show_terminal" + id).scrollTop = document.getElementById("show_terminal" + id).scrollHeight
+    }
   });
 });
 
@@ -400,8 +414,11 @@ $('#compile').on('click', function() {
      interval = setInterval(try_ros_connection, 2000);
   }
 
-  document.getElementById("show_terminal").value = '';
-  document.getElementById("show_topic").value = '';
+  for (var id = 0; id < 2; id++)
+  {
+    document.getElementById("show_terminal" + id).value = '';
+    document.getElementById("show_topic" + id).value = '';
+  }
 
   var code = {};
   for (var filename in editor_sessions)
