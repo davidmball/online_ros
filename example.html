@@ -3,7 +3,7 @@
 
 {{html_head}}
 
-<body onload="init()">
+<body>
 
 {{html_header}}
 
@@ -62,46 +62,41 @@
     </div>
   </div>
 
+  <div class="tab-frame1" id="feedback1">
+    <input type="radio" checked name="tab1" id="tab_terminal1"><label for="tab_terminal1">Terminal</label>
+    <input type="radio" name="tab1" id="tab_topics1"><label for="tab_topics1">Topics</label>
+    <input type="radio" name="tab1" id="tab_services1"><label for="tab_services1">Services</label>
+    <input type="radio" name="tab1" id="tab_nodes1"><label for="tab_nodes1">Nodes</label>
+    <input type="radio" name="tab1" id="tab_params1"><label for="tab_params1">Params</label>
+    <input type="radio" name="tab1" id="tab_viz1"><label for="tab_viz1">Viewer</label>
 
-
-    <div class="tab-frame1" id="feedback1">
-      <input type="radio" checked name="tab1" id="tab_terminal1"><label for="tab_terminal1">Terminal</label>
-      <input type="radio" name="tab1" id="tab_topics1"><label for="tab_topics1">Topics</label>
-      <input type="radio" name="tab1" id="tab_services1"><label for="tab_services1">Services</label>
-      <input type="radio" name="tab1" id="tab_nodes1"><label for="tab_nodes1">Nodes</label>
-      <input type="radio" name="tab1" id="tab_params1"><label for="tab_params1">Params</label>
-      <input type="radio" name="tab1" id="tab_viz1"><label for="tab_viz1">Viewer</label>
-
-      <div class="tab1">
-        <textarea id="show_terminal1" readonly="readonly"></textarea>
-      </div>
-      <div class="tab1">
-        <select name="topics" id="topic_list1" size="1" onchange="topic_list_select(this);"></select>
-        </br>
-        <textarea id="show_topic1" readonly="readonly"></textarea>
-      </div>
-      <div class="tab1">
-        <select name="services" id="service_list1" size="1" onchange="service_list_select(this);"></select>
-      </div>
-      <div class="tab1">
-         <select name="nodes" id="node_list1" size="1" onchange="nodes_list_select(this);"></select>
-      </div>
-      <div class="tab1">
-         <select name="params" id="param_list1" size="1" onchange="param_list_select(this);"></select>
-         <br>
-         <textarea id="show_param1"></textarea>
-         <br>
-         <br>
-         <input type="button" value="Set Param" id="set_param1">
-      </div>
-      <div class="tab1">
-        <div id="roslib_viewer1"></div>
-      </div>
+    <div class="tab1">
+      <textarea id="show_terminal1" readonly="readonly"></textarea>
     </div>
-
-
+    <div class="tab1">
+      <select name="topics" id="topic_list1" size="1" onchange="topic_list_select(this);"></select>
+      </br>
+      <textarea id="show_topic1" readonly="readonly"></textarea>
+    </div>
+    <div class="tab1">
+      <select name="services" id="service_list1" size="1" onchange="service_list_select(this);"></select>
+    </div>
+    <div class="tab1">
+       <select name="nodes" id="node_list1" size="1" onchange="nodes_list_select(this);"></select>
+    </div>
+    <div class="tab1">
+       <select name="params" id="param_list1" size="1" onchange="param_list_select(this);"></select>
+       <br>
+       <textarea id="show_param1"></textarea>
+       <br>
+       <br>
+       <input type="button" value="Set Param" id="set_param1">
+    </div>
+    <div class="tab1">
+      <div id="roslib_viewer1"></div>
+    </div>
+  </div>
 </div>
-
 
 <script type='text/javascript'>
 
@@ -132,41 +127,46 @@ ros.on('connection', function() {
   clearInterval(interval);
   interval_get_ros_details = setInterval(get_ros_details, 500);
 
-if (example_info.example.feedback_top[0].tab == "viz")
-{
-  if (typeof viewer != "undefined") {
-    viewer.unsubscribe();
-    delete viewer;
-  }
+  for (var id = 0; id < 2; id++)
+  {
+    // set the defaults from the xml file
+    if (example_info.example.feedback[id].tab == "topics" &&
+      typeof example_info.example.feedback[id].topic[0] != "undefined")
+    {
+      set_topic(example_info.example.feedback[id].topic[0], id);
+    }
+    else if (example_info.example.feedback[id].tab == "viz")
+    {
+      if (typeof viewer != "undefined") {
+        viewer.unsubscribe();
+        delete viewer;
+      }
 
-  // TODO: The width and height need to come from somewhere meaningful
-  viewer = new ROS3D.Viewer({
-    divID : 'roslib_viewer',
-    width : 300,
-    height : 200,
-    antialias : true
-  });
+      // TODO: The width and height need to come from somewhere meaningful
+      viewer = new ROS3D.Viewer({
+        divID : 'roslib_viewer' + id,
+        width : 300,
+        height : 200,
+        antialias : true
+      });
 
-  if (typeof markerClient != "undefined") {
-    markerClient.unsubscribe();
-    delete markerClient;
-  }
-  markerClient = new ROS3D.MarkerClient({
-    ros : ros,
-    tfClient : new ROSLIB.TFClient({
-      ros : ros,
-      angularThres : 0.01,
-      transThres : 0.01,
-      rate : 10.0,
-      fixedFrame : example_info.example.feedback_top[0].frame[0]
-    }),
-    topic : example_info.example.feedback_top[0].topic[0],
-    rootObject : viewer.scene
-  });
-}
-  if (typeof example_info.example.feedback_top[0].tab == "topic" &&
-    typeof example_info.example.feedback_top[0].topic[0] != "undefined") {
-    set_topic(example_info.example.feedback_top[0].topic[0]);
+      if (typeof markerClient != "undefined") {
+        markerClient.unsubscribe();
+        delete markerClient;
+      }
+      markerClient = new ROS3D.MarkerClient({
+        ros : ros,
+        tfClient : new ROSLIB.TFClient({
+          ros : ros,
+          angularThres : 0.01,
+          transThres : 0.01,
+          rate : 10.0,
+          fixedFrame : example_info.example.feedback[id].frame[0]
+        }),
+        topic : example_info.example.feedback[id].topic[0],
+        rootObject : viewer.scene
+      });
+    }
   }
 
 });
@@ -189,8 +189,8 @@ function set_topic(topic_name, id) {
   var topic_type;
   if (topic_name == '/rosout' || topic_name == 'rosout_agg') {
     topic_type = 'rosgraph_msgs/Log';
-  } else if (topic_name == example_info.example.feedback_top[0].topic[0]) {
-    topic_type = example_info.example.feedback_top[0].msg_type[0];
+  } else if (topic_name == example_info.example.feedback[id].topic[0]) {
+    topic_type = example_info.example.feedback[id].msg_type[0];
   } else {
     // hope this works.
     topic_type = 'std_msgs/String';
@@ -278,10 +278,14 @@ function get_ros_details() {
       sel.options.length = 0;
       for (var node in nodes)
       {
-        var opt = document.createElement('option');
-        opt.innerHTML = nodes[node];
-        opt.value = nodes[node];
-        sel.appendChild(opt);
+        if (nodes[node].indexOf('tf2_web_republisher') == -1 ||
+            nodes[node].indexOf('rosbridge_websocket') == -1 )
+        {
+          var opt = document.createElement('option');
+          opt.innerHTML = nodes[node];
+          opt.value = nodes[node];
+          sel.appendChild(opt);
+        }
       }
     }
   });
@@ -382,8 +386,10 @@ $.get("/get_files?name=" + example_name, function (data) {
    document.getElementById("run_cmd").innerHTML = example_info.example.run_cmd;
    document.getElementById("example_title").innerHTML = example_info.example.title;
    document.getElementById("description").innerHTML = example_info.example.description;
-   document.getElementById("tab_" + example_info.example.feedback_top[0].tab).checked = true;
-
+   for (var id = 0; id < 2; id++)
+   {
+      document.getElementById("tab_" + example_info.example.feedback[id].tab + id).checked = true;
+   }
 });
 
 
