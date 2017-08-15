@@ -262,3 +262,13 @@ footer {
   height: 40px;
   background-color: 0xFAFAFA;
 }
+
+.about_contribute {
+  position: absolute;
+  width: 800px;
+  z-index: 15;
+  left: 50%;
+  margin: 100px 0 0 -420px;
+  background-color: #FFFFFF;
+  padding: 20px;
+}
