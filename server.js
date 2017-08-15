@@ -123,10 +123,26 @@ io.on('connection', function (socket) {
   console.log('a user connected')
 })
 
-function replaceTemplates (data) {
+
+function replaceTemplates (data, name, title, description) {
   data = data.toString().replace(/\{\{html_footer\}\}/g, htmlFooterFile)
   data = data.toString().replace(/\{\{html_header\}\}/g, htmlHeaderFile)
   data = data.toString().replace(/\{\{html_head\}\}/g, htmlHeadFile)
+
+  // Set the title and description which is what google uses for search results.
+  const siteTitle = 'Online ROS'
+  if (name === '/example.html')
+  {
+    data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Example: ' + title)
+    data = data.toString().replace(/\{\{description\}\}/g, description);
+  } else {
+    if (name === '/index.html')      { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Home')}
+    if (name === '/about.html')      { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - About')}
+    if (name === '/contribute.html') { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Contribute')}
+
+    data = data.toString().replace(/\{\{description\}\}/g, 'View, edit, compile and run ROS examples in your browser for free.')
+  }
+
   return data
 };
 
@@ -149,7 +165,20 @@ app.get('/example.html', function (req, res) {
         var rosbridgePort = uniqueRandomAtDepth(rosbridgePortMin, rosbridgePortMax, 5000)
         data = data.toString().replace(/\{\{host_name\}\}/g, hostName)
         data = data.toString().replace(/\{\{rosbridge_port\}\}/g, rosbridgePort())
-        res.send(replaceTemplates(data))
+
+        // TODO: Cache this lookup!
+        var exampleName = req.query.name
+        var exampleXML
+        for (var j = 0; j < files.length; j++) {
+          if (files[j][0] === exampleName + '.xml') { exampleXML = files[j][2] }
+        }
+        var resultXML = ''
+        parseString(exampleXML, function (err, result) {
+          if (err) { throw err }
+          resultXML = result
+        })
+
+        res.send(replaceTemplates(data, '/example.html', resultXML.example.title, resultXML.example.description))
       }
     })
   }
@@ -164,7 +193,7 @@ function cacheFile (filename, file, res) {
       if (err) {
         res.send(404)
       } else {
-        var fileData = replaceTemplates(data)
+        var fileData = replaceTemplates(data, filename)
         res.contentType('text/html')
         res.send(fileData)
         return fileData
