@@ -19,7 +19,7 @@
   </div>
 
   <div id="main_files">
-    Files: <select name="files" id="file_list" size="1" onchange="file_list_select();"></select>
+    Files: <select name="files" id="file_list" size="1" onchange="onFileListSelect(this);"></select>
   </div>
 
   <div id="editor"></div>
@@ -44,18 +44,18 @@
       <textarea id="show_terminal0" readonly="readonly"></textarea>
     </div>
     <div class="tab0">
-      <select name="topics" id="topic_list0" size="1" onchange="topic_list_select(this);"></select>
+      <select name="topics" id="topic_list0" size="1" onchange="onTopicListSelect(this);"></select>
       </br>
       <textarea id="show_topic0" readonly="readonly"></textarea>
     </div>
     <div class="tab0">
-      <select name="services" id="service_list0" size="1" onchange="service_list_select(this);"></select>
+      <select name="services" id="service_list0" size="1" onchange="onServiceListSelect(this);"></select>
     </div>
     <div class="tab0">
-       <select name="nodes" id="node_list0" size="1" onchange="nodes_list_select(this);"></select>
+       <select name="nodes" id="node_list0" size="1" onchange="onNodeListSelect(this);"></select>
     </div>
     <div class="tab0">
-       <select name="params" id="param_list0" size="1" onchange="param_list_select(this);"></select>
+       <select name="params" id="param_list0" size="1" onchange="onParamListSelect(this);"></select>
        <br>
        <textarea id="show_param0"></textarea>
        <br>
@@ -79,18 +79,18 @@
       <textarea id="show_terminal1" readonly="readonly"></textarea>
     </div>
     <div class="tab1">
-      <select name="topics" id="topic_list1" size="1" onchange="topic_list_select(this);"></select>
+      <select name="topics" id="topic_list1" size="1" onchange="onTopicListSelect(this);"></select>
       </br>
       <textarea id="show_topic1" readonly="readonly"></textarea>
     </div>
     <div class="tab1">
-      <select name="services" id="service_list1" size="1" onchange="service_list_select(this);"></select>
+      <select name="services" id="service_list1" size="1" onchange="onServiceListSelect(this);"></select>
     </div>
     <div class="tab1">
-       <select name="nodes" id="node_list1" size="1" onchange="nodes_list_select(this);"></select>
+       <select name="nodes" id="node_list1" size="1" onchange="onNodeListSelect(this);"></select>
     </div>
     <div class="tab1">
-       <select name="params" id="param_list1" size="1" onchange="param_list_select(this);"></select>
+       <select name="params" id="param_list1" size="1" onchange="onParamListSelect(this);"></select>
        <br>
        <textarea id="show_param1"></textarea>
        <br>

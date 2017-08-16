@@ -100,7 +100,7 @@ ros.on('close', function () {
   console.log('Connection to websocket server closed.')
 })
 
-function set_topic (topicName, id) {
+function setTopicSub (topicName, id) {
   if (topicName === selectedTopicName[id] && typeof topicListener !== 'undefined') {
     return
   } else {
@@ -132,18 +132,19 @@ function set_topic (topicName, id) {
 
   topicListener.subscribe(function (message) {
     // set 2 space tabs and get rid of the ""
-    message = JSON.stringify(message, null, 2).replace(/\"([^(\")"]+)\":/g, '$1:')
+    // message = JSON.stringify(message, null, 2).replace(/\"([^(\")"]+)\":/g, '$1:')
+    message = JSON.stringify(message, null, 2).replace(/([^()"]+):/g, '$1:')
     document.getElementById('show_topic' + id).value += message + '\r'
     document.getElementById('show_topic' + id).scrollTop = document.getElementById('show_topic' + id).scrollHeight
   })
 }
 
-function topic_list_select (element) {
-  set_topic(element.value, element.id.slice(-1))
+function onTopicListSelect (element) {
+  setTopicSub(element.value, element.id.slice(-1))
 }
 
 var paramROSLIB
-function set_param (param) {
+function setParam (param) {
   selectedParamName = param
   if (typeof paramROSLIB !== 'undefined') {
     paramROSLIB = null
@@ -154,10 +155,9 @@ function set_param (param) {
   })
 }
 
-function param_list_select () {
-  var sel = document.getElementById('param_list')
-  var selValue = sel.options[sel.selectedIndex].value
-  set_param(selValue)
+function onParamListSelect (element) {
+  var selValue = element.value
+  setParam(selValue)
   paramROSLIB.get(function (value) {
     document.getElementById('show_param').value = value
   })
@@ -186,7 +186,7 @@ function getROSDetails () {
         }
       }
       sel.value = selectedTopicName[id]
-      set_topic(selectedTopicName[id], id)
+      setTopicSub(selectedTopicName[id], id)
     }
   })
   ros.getNodes(function (nodes) {
@@ -255,13 +255,13 @@ editor.setTheme('ace/theme/chrome')
 var EditSession = ace.require('ace/edit_session').EditSession
 var editorSessions = {}
 
-var example_name = location.search.split('name=')[1]
+var exampleName = location.search.split('name=')[1]
 
-$.get('/get_files?name=' + example_name, function (data) {
+$.get('/get_files?name=' + exampleName, function (data) {
   // parse the data into the files for the editor and the general example information
-  var parsed_data = JSON.parse(data)
-  files = parsed_data[0]
-  exampleInfo = parsed_data[1]
+  var parsedData = JSON.parse(data)
+  files = parsedData[0]
+  exampleInfo = parsedData[1]
 
    // load each file into its own editor
   var sel = document.getElementById('file_list')
@@ -272,7 +272,7 @@ $.get('/get_files?name=' + example_name, function (data) {
     sel.appendChild(opt)
     var filenameExtension = filename.split('.').pop()
     editorSessions[filename] = new EditSession(filename)
-    if (filenameExtension == 'cpp' || filenameExtension == 'c') { editorSessions[filename].setMode('ace/mode/c_cpp') } else if (filenameExtension == 'xml') { editorSessions[filename].setMode('ace/mode/xml') } else { editorSessions[filename].setMode('ace/mode/text') }
+    if (filenameExtension === 'cpp' || filenameExtension === 'c') { editorSessions[filename].setMode('ace/mode/c_cpp') } else if (filenameExtension === 'xml') { editorSessions[filename].setMode('ace/mode/xml') } else { editorSessions[filename].setMode('ace/mode/text') }
     editorSessions[filename].setValue(files[filename], -1)
   }
 
@@ -290,11 +290,10 @@ $.get('/get_files?name=' + example_name, function (data) {
   }
 })
 
-function file_list_select () {
-  var sel = document.getElementById('file_list')
-  var selValue = sel.options[sel.selectedIndex].value
+function onFileListSelect (element) {
+  var selValue = element.value
   editor.setSession(editorSessions[selValue])
-  if (selValue == 'CMakeLists.txt' || selValue == 'package.xml') {
+  if (selValue === 'CMakeLists.txt' || selValue === 'package.xml') {
     editor.setReadOnly(true)
   } else {
     editor.setReadOnly(false)
@@ -329,7 +328,7 @@ $('#compile').on('click', function () {
     rosbridge_port: document.getElementById('rosbridge_port').value
   }
 
-  $.post('/compile?name=' + example_name, json, function (data, error, xhr) {
+  $.post('/compile?name=' + exampleName, json, function (data, error, xhr) {
     document.getElementById('compile').style.background = '#00FF00'
     runningCode = false
   })
