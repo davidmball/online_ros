@@ -123,7 +123,6 @@ io.on('connection', function (socket) {
   console.log('a user connected')
 })
 
-
 function replaceTemplates (data, name, title, description) {
   data = data.toString().replace(/\{\{html_footer\}\}/g, htmlFooterFile)
   data = data.toString().replace(/\{\{html_header\}\}/g, htmlHeaderFile)
@@ -131,14 +130,13 @@ function replaceTemplates (data, name, title, description) {
 
   // Set the title and description which is what google uses for search results.
   const siteTitle = 'Online ROS'
-  if (name === '/example.html')
-  {
+  if (name === '/example.html') {
     data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Example: ' + title)
-    data = data.toString().replace(/\{\{description\}\}/g, description);
+    data = data.toString().replace(/\{\{description\}\}/g, description)
   } else {
-    if (name === '/index.html')      { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Home')}
-    if (name === '/about.html')      { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - About')}
-    if (name === '/contribute.html') { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Contribute')}
+    if (name === '/index.html') { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Home') }
+    if (name === '/about.html') { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - About') }
+    if (name === '/contribute.html') { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Contribute') }
 
     data = data.toString().replace(/\{\{description\}\}/g, 'View, edit, compile and run ROS examples in your browser for free.')
   }

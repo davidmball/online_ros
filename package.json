@@ -27,5 +27,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/davidmball/by_working_example.git"
+  },
+  "standard": {
+    "globals": [ "ROSLIB", "ROS3D", "ace", "io", "$", "location" ]
   }
 }
