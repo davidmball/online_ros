@@ -58,9 +58,9 @@ ros.on('connection', function () {
 
   for (var id = 0; id < 2; id++) {
     // set the defaults from the xml file
-    if (exampleInfo.example.feedback[id].tab == 'topics') {
+    if (exampleInfo.example.feedback[id].tab[0] === 'topics') {
       selectedTopicName[id] = exampleInfo.example.feedback[id].topic[0]
-    } else if (exampleInfo.example.feedback[id].tab == 'viz') {
+    } else if (exampleInfo.example.feedback[id].tab[0] === 'viz') {
       if (typeof markerClient !== 'undefined') {
         markerClient = null
       }
@@ -139,7 +139,7 @@ function setTopicSub (topicName, id) {
   })
 }
 
-function onTopicListSelect (element) {
+function onTopicListSelect (element) { // eslint-disable-line
   setTopicSub(element.value, element.id.slice(-1))
 }
 
@@ -155,7 +155,7 @@ function setParam (param) {
   })
 }
 
-function onParamListSelect (element) {
+function onParamListSelect (element) { // eslint-disable-line
   var selValue = element.value
   setParam(selValue)
   paramROSLIB.get(function (value) {
@@ -290,7 +290,7 @@ $.get('/get_files?name=' + exampleName, function (data) {
   }
 })
 
-function onFileListSelect (element) {
+function onFileListSelect (element) { // eslint-disable-line
   var selValue = element.value
   editor.setSession(editorSessions[selValue])
   if (selValue === 'CMakeLists.txt' || selValue === 'package.xml') {
