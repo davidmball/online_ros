@@ -1,4 +1,4 @@
-By Working Example
+Online ROS
 ==================
 
 This is a web system where the user can compile, edit and run working Robot Operating System (ROS) example code.
@@ -38,7 +38,10 @@ sudo ln -s /usr/local/node-$NODE_VERSION-linux-x64 /usr/local/node
 nodejs --version
 ```
 
-Then install the package dependencies.
+Then install the package dependencies. Go to the online_ros directory and run
+```
+npm install
+```
 
 ### Running
 
@@ -49,7 +52,7 @@ export NODE_ENV=production
 
 Then run locally with:
 ```
-nodemon server.js
+nodemon -e js,html server.js
 ```
 Or on a production system at the moment to get access to port 80.
 ```
