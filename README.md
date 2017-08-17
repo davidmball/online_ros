@@ -15,7 +15,7 @@ sudo apt-get install git
 ```
 You'll want to clone the code which runs the site and the example code into separate directories.
 ```
-git clone https://github.com/davidmball/by_working_example.git
+git clone https://github.com/davidmball/online_ros.git
 git clone https://github.com/davidmball/ros_examples.git
 ```
 Docker is required to run the example code. For the Google compute engine I use docker.io.
