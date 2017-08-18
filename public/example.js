@@ -252,6 +252,7 @@ $(document).ready(function () {
 var files = {}
 var editor = ace.edit('editor')
 editor.setTheme('ace/theme/chrome')
+editor.setPrintMarginColumn(120)
 var EditSession = ace.require('ace/edit_session').EditSession
 var editorSessions = {}
 
