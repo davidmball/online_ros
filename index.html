@@ -12,11 +12,11 @@ app.controller("ListController", ["$scope", "$http", function ($scope, $http) {
       $http.get('/get_example_list')
       .then(
       function (response) {
-        console.log(response.data);
+        //console.log(response.data);
           $scope.Members = response.data;
       },
       function (response) {
-        console.log("failure");
+        //console.log("failure");
       }
   );
 }]);
@@ -51,8 +51,10 @@ app.filter('remove_array', function() {
             <span style="float: right">{{member[1].example.ros_version | remove_array}}</span></br>
             {{member[0].package.description | remove_array}}</br></br>
             Packages: {{member[0].package.run_depend | remove_array}}
-
-
+            <!-- TODO: It would be better to have each element read from member[1]
+                 and displayed in a separate box -->
+            <span style="float: right; background: lightgreen;">{{member[2] | remove_array}} </span>
+            </script>
         </div>
       </div>
    {{html_footer}}

@@ -115,7 +115,12 @@ dir.readFiles(examplePath, function (err, content, filename, next) {
           resultXML = result
         })
 
-        exampleList.push([exampleFiles[i], resultXML])
+        var languages = ""
+        for (var j = 0; j < resultXML.example.language.length; j++) {
+          languages = languages.concat(resultXML.example.language[j].name + ' ')
+        }
+
+        exampleList.push([exampleFiles[i], resultXML, languages])
       }
     })
 
@@ -276,6 +281,8 @@ app.post('/compile', function (req, res) {
   for (var filename in req.body.code_files) {
     if (filename === '/CMakeLists.txt' || filename === '/package.xml') { continue }
     fs.outputFileSync(compilePath + tempDockerDir + '/' + exampleName + '/' + filename, req.body.code_files[filename])
+    // to make sure the python files are executable
+    fs.chmod(compilePath + tempDockerDir + '/' + exampleName + '/' + filename, '0755')
   }
 
   // write out the CMakeLists and packge files.

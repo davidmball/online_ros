@@ -273,17 +273,35 @@ $.get('/get_files?name=' + exampleName, function (data) {
     sel.appendChild(opt)
     var filenameExtension = filename.split('.').pop()
     editorSessions[filename] = new EditSession(filename)
-    if (filenameExtension === 'cpp' || filenameExtension === 'c') { editorSessions[filename].setMode('ace/mode/c_cpp') } else if (filenameExtension === 'xml') { editorSessions[filename].setMode('ace/mode/xml') } else { editorSessions[filename].setMode('ace/mode/text') }
+    if (filenameExtension === 'cpp' || filenameExtension === 'c')
+    { editorSessions[filename].setMode('ace/mode/c_cpp') }
+    else if (filenameExtension === 'xml')
+    { editorSessions[filename].setMode('ace/mode/xml') }
+    else if (filenameExtension === 'py')
+    { editorSessions[filename].setMode('ace/mode/python')}
+    else
+    { editorSessions[filename].setMode('ace/mode/text') }
     editorSessions[filename].setValue(files[filename], -1)
   }
 
    // set the initial file for editing
    // TODO: Test if this is set / valid
-  editor.setSession(editorSessions[exampleInfo.example.start_file])
-  sel.value = exampleInfo.example.start_file
+  editor.setSession(editorSessions[exampleInfo.example.language[0].start_file])
+  sel.value = exampleInfo.example.language[0].start_file
+
+  // MAke a list of the languages
+  var sel = document.getElementById('language_list')
+  sel.options.length = 0
+  for (var lang in exampleInfo.example.language) {
+    var opt = document.createElement('option')
+    opt.innerHTML = exampleInfo.example.language[lang].name
+    opt.value = exampleInfo.example.language[lang].name
+    sel.appendChild(opt)
+  }
+  sel.value = exampleInfo.example.language[0].name
 
    // set other parts of the page
-  document.getElementById('run_cmd').innerHTML = exampleInfo.example.run_cmd
+  document.getElementById('run_cmd').innerHTML = exampleInfo.example.language[0].run_cmd
   document.getElementById('example_title').innerHTML = exampleInfo.example.title
   document.getElementById('description').innerHTML = exampleInfo.example.description
   for (var id = 0; id < 2; id++) {
@@ -298,6 +316,16 @@ function onFileListSelect (element) { // eslint-disable-line
     editor.setReadOnly(true)
   } else {
     editor.setReadOnly(false)
+  }
+}
+
+function onLanguageSelect (element) {
+  var selValue = element.value
+  for (var lang in exampleInfo.example.language)
+  {
+    if (selValue === exampleInfo.example.language[lang].name[0]) {
+      document.getElementById('run_cmd').innerHTML = exampleInfo.example.language[lang].run_cmd
+    }
   }
 }
 
