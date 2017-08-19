@@ -25,10 +25,14 @@
   <div id="editor"></div>
 
   <div id="main_footer">
-    <select name="languages" id="language_list" size="1" onchange="onLanguageSelect(this);"></select>
-    <input type="button" value="Compile & Run" id="compile">
-  </br>
-  <span style="display: inline-block; padding-top: 4px;">Command: <b id="run_cmd"></b></span>
+    <div style="float: left; padding-right: 10px;">
+      <select name="languages" id="language_list" size="2" onchange="onLanguageSelect(this);"></select>
+    </div>
+    <div>
+      <input type="button" value="Compile & Run" id="compile">
+      </br>
+      <span style="display: inline-block; padding-top: 4px;">Cmd: <b id="run_cmd"></b></span>
+    </div>
   </div>
 </div>
 

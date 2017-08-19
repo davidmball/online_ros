@@ -256,12 +256,8 @@ app.get('/get_example_list', function (req, res) {
   res.send(exampleList)
 })
 
-console.log(hostPort)
 var server = app.listen(hostPort, function () {
-  var host = server.address().address
-  var port = server.address().port
-
-  console.log('Working example listening at http://%s:%s', host, port)
+  console.log('Online ROS listening on port: %s', server.address().port)
 })
 
 io.listen(server)
@@ -298,20 +294,25 @@ app.post('/compile', function (req, res) {
   fs.outputFileSync(compilePath + tempDockerDir + '/' + exampleName + '/' + 'package.xml', exampleFiles['/package.xml'])
 
   // setup and spawn the docker container
-  console.log('Compiling code.')
   var spawn = require('child_process').spawn
   var dockerID = crypto.randomBytes(16).toString('hex')
   var netID = crypto.randomBytes(16).toString('hex')
   var runCommand = ''
   var rosbridgePort = req.body.rosbridge_port
-
+  var runTime = 15
   parseString(exampleXML, function (err, result) {
     if (err) { throw err }
-    runCommand = result.example.run_cmd
+
+    for (var i = 0; i < result.example.language.length; i++) {
+      if (JSON.stringify(req.body.language) === JSON.stringify(result.example.language[i].name[0])) {
+        runCommand = result.example.language[i].run_cmd
+      }
+    }
+    runTime = result.example.time_limit
   })
 
-  console.log(runCommand)
-  var args = ['15', dockerID, 'davidmball/ros_online:kinetic', compilePath + tempDockerDir + '/', netID, runCommand, rosbridgePort]
+  console.log('Compiling and running code: ' + runCommand)
+  var args = [runTime, dockerID, 'davidmball/ros_online:kinetic', compilePath + tempDockerDir + '/', netID, runCommand, rosbridgePort]
   var ls = spawn('./run_docker.sh', args)
 
   // send the compilee and executable stdout/err output to the user's browserzs

@@ -42,6 +42,7 @@ var markerClient
 var selectedTopicName = ['undefined', 'undefined']
 var selectedParamName = ['undefined', 'undefined']
 var topicListener
+var codeLanguage = ""
 
 function tryROSConnection () {
   if (connectedROSLIB === false) {
@@ -110,7 +111,7 @@ function setTopicSub (topicName, id) {
   var topicType
   if (topicName === '/rosout' || topicName === 'rosout_agg') {
     topicType = 'rosgraph_msgs/Log'
-  } else if (topicName === exampleInfo.example.feedback[id].topic[0]) {
+  } else if (typeof exampleInfo.example.feedback[id].topic !== 'undefined' && topicName === exampleInfo.example.feedback[id].topic[0]) {
     topicType = exampleInfo.example.feedback[id].msg_type[0]
   } else {
     // hope this works.
@@ -299,6 +300,7 @@ $.get('/get_files?name=' + exampleName, function (data) {
     sel.appendChild(opt)
   }
   sel.value = exampleInfo.example.language[0].name
+  codeLanguage = exampleInfo.example.language[0].name[0]
 
    // set other parts of the page
   document.getElementById('run_cmd').innerHTML = exampleInfo.example.language[0].run_cmd
@@ -319,12 +321,15 @@ function onFileListSelect (element) { // eslint-disable-line
   }
 }
 
-function onLanguageSelect (element) {
-  var selValue = element.value
+
+function onLanguageSelect (element) { // eslint-disable-line
+  codeLanguage = element.value
   for (var lang in exampleInfo.example.language)
   {
-    if (selValue === exampleInfo.example.language[lang].name[0]) {
+    if (codeLanguage === exampleInfo.example.language[lang].name[0]) {
       document.getElementById('run_cmd').innerHTML = exampleInfo.example.language[lang].run_cmd
+      editor.setSession(editorSessions[exampleInfo.example.language[lang].start_file])
+      // TODO: Only show the language related files
     }
   }
 }
@@ -354,7 +359,8 @@ $('#compile').on('click', function () {
 
   var json = {
     code_files: code,
-    rosbridge_port: document.getElementById('rosbridge_port').value
+    rosbridge_port: document.getElementById('rosbridge_port').value,
+    language : codeLanguage
   }
 
   $.post('/compile?name=' + exampleName, json, function (data, error, xhr) {
