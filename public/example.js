@@ -266,12 +266,7 @@ $.get('/get_files?name=' + exampleName, function (data) {
   exampleInfo = parsedData[1]
 
    // load each file into its own editor
-  var sel = document.getElementById('file_list')
   for (var filename in files) {
-    var opt = document.createElement('option')
-    opt.value = filename
-    opt.innerHTML = filename
-    sel.appendChild(opt)
     var filenameExtension = filename.split('.').pop()
     editorSessions[filename] = new EditSession(filename)
     if (filenameExtension === 'cpp' || filenameExtension === 'c')
@@ -288,7 +283,7 @@ $.get('/get_files?name=' + exampleName, function (data) {
    // set the initial file for editing
    // TODO: Test if this is set / valid
   editor.setSession(editorSessions[exampleInfo.example.language[0].start_file])
-  sel.value = exampleInfo.example.language[0].start_file
+
 
   // MAke a list of the languages
   var sel = document.getElementById('language_list')
@@ -301,6 +296,7 @@ $.get('/get_files?name=' + exampleName, function (data) {
   }
   sel.value = exampleInfo.example.language[0].name
   codeLanguage = exampleInfo.example.language[0].name[0]
+  setFileList(codeLanguage, 0)
 
    // set other parts of the page
   document.getElementById('run_cmd').innerHTML = exampleInfo.example.language[0].run_cmd
@@ -321,6 +317,22 @@ function onFileListSelect (element) { // eslint-disable-line
   }
 }
 
+function setFileList(language, langID) {
+  var sel = document.getElementById('file_list')
+  sel.options.length = 0;
+  for (var filename in files) {
+    var filenameExtension = filename.split('.').pop()
+    if (language === 'cpp' && filenameExtension == 'py')
+      continue;
+    if (language === 'py' && (filenameExtension == 'cpp' || filenameExtension == 'c' || filenameExtension == 'h' || filenameExtension == 'hpp'))
+      continue;
+    var opt = document.createElement('option')
+    opt.value = filename
+    opt.innerHTML = filename
+    sel.appendChild(opt)
+  }
+  sel.value = exampleInfo.example.language[langID].start_file
+}
 
 function onLanguageSelect (element) { // eslint-disable-line
   codeLanguage = element.value
@@ -329,7 +341,7 @@ function onLanguageSelect (element) { // eslint-disable-line
     if (codeLanguage === exampleInfo.example.language[lang].name[0]) {
       document.getElementById('run_cmd').innerHTML = exampleInfo.example.language[lang].run_cmd
       editor.setSession(editorSessions[exampleInfo.example.language[lang].start_file])
-      // TODO: Only show the language related files
+      setFileList(codeLanguage, lang)
     }
   }
 }
