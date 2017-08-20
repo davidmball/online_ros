@@ -23,17 +23,16 @@ Docker is required to run the example code. For the Google compute engine I use 
 sudo apt-get install docker.io
 ```
 
-And get the docker container.
-```
-docker pull davidmball/ros_online:kinetic
-```
-
-You might need to add your user to the `docker` group.
+Add your user to the `docker` group.
 ```
 sudo usermod -a -G docker $USER
 ```
 Then log out and back in in order to use docker with your user.
 
+And get the docker container.
+```
+docker pull davidmball/ros_online:kinetic
+```
 
 Also, you will need npm/nodejs. Note that for the Google compute engine I had to use these commands to install it.
 ```
