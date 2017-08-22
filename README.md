@@ -31,7 +31,7 @@ Then log out and back in in order to use docker with your user.
 
 And get the docker container.
 ```
-docker pull davidmball/ros_online:kinetic
+docker pull davidmball/online_ros:kinetic
 ```
 
 Also, you will need npm/nodejs. Note that for the Google compute engine I had to use these commands to install it.
