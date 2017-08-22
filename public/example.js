@@ -41,12 +41,13 @@ var markerClient
 
 var selectedTopicName = ['undefined', 'undefined']
 var selectedParamName = ['undefined', 'undefined']
-var topicListener
+var topicListener = []
 var codeLanguage = ""
 
 function tryROSConnection () {
   if (connectedROSLIB === false) {
     ros.connect('ws://' + document.getElementById('host_name').value + ':' + document.getElementById('rosbridge_port').value)
+  //  ros.connect('ws://localhost:9090')
   }
 }
 
@@ -55,7 +56,7 @@ ros.on('connection', function () {
   console.log('Connected to websocket server.')
   intervalActive = false
   clearInterval(interval)
-  intervalGetROSDetails = setInterval(getROSDetails, 500)
+  intervalGetROSDetails = setInterval(getROSDetails, 250)
 
   for (var id = 0; id < 2; id++) {
     // set the defaults from the xml file
@@ -98,11 +99,14 @@ ros.on('error', function (error) {
 
 ros.on('close', function () {
   clearInterval(intervalGetROSDetails)
+  for (var id = 0; id < 2; id++) {
+     topicListener[id] = null
+  }
   console.log('Connection to websocket server closed.')
 })
 
 function setTopicSub (topicName, id) {
-  if (topicName === selectedTopicName[id] && typeof topicListener !== 'undefined') {
+  if (topicName === selectedTopicName[id] && typeof topicListener[id] !== 'undefined' && topicListener[id] !== null) {
     return
   } else {
     selectedTopicName[id] = topicName
@@ -118,20 +122,20 @@ function setTopicSub (topicName, id) {
     topicType = 'std_msgs/String'
   }
 
-  if (typeof topicListener !== 'undefined') {
-    topicListener.unsubscribe()
-    topicListener = null
+  if (typeof topicListener[id] !== 'undefined' && topicListener[id] !== null) {
+    topicListener[id].unsubscribe()
+    topicListener[id] = null
     document.getElementById('show_topic' + id).value = ''
   }
 
     // TODO: Why do I need to set the messagetype for the listener?
-  topicListener = new ROSLIB.Topic({
+  topicListener[id] = new ROSLIB.Topic({
     ros: ros,
     name: topicName,
     messageType: topicType
   })
 
-  topicListener.subscribe(function (message) {
+  topicListener[id].subscribe(function (message) {
     // set 2 space tabs and get rid of the ""
     // message = JSON.stringify(message, null, 2).replace(/\"([^(\")"]+)\":/g, '$1:')
     message = JSON.stringify(message, null, 2).replace(/([^()"]+):/g, '$1:')
@@ -171,6 +175,7 @@ function onParamListSelect (element) { // eslint-disable-line
  * At the least we could store the callback values and check if they have changed.
  */
 function getROSDetails () {
+
   ros.getTopics(function (topics) {
     // TODO: It's a shame this doesn't also return the message types.
     for (var id = 0; id < 2; id++) {
@@ -185,9 +190,10 @@ function getROSDetails () {
           opt.value = topics[topic]
           sel.appendChild(opt)
         }
+        if (selectedTopicName[id] === topics[topic])
+          setTopicSub(selectedTopicName[id], id)
       }
       sel.value = selectedTopicName[id]
-      setTopicSub(selectedTopicName[id], id)
     }
   })
   ros.getNodes(function (nodes) {
@@ -356,13 +362,24 @@ $('#compile').on('click', function () {
   connectedROSLIB = false
   if (!intervalActive) {
     intervalActive = true
-    interval = setInterval(tryROSConnection, 2000)
+    interval = setInterval(tryROSConnection, 1000)
   }
 
   for (var id = 0; id < 2; id++) {
     document.getElementById('show_terminal' + id).value = ''
     document.getElementById('show_topic' + id).value = ''
+    var sel = document.getElementById('topic_list' + id)
+    sel.options.length = 0
+    var sel = document.getElementById('node_list' + id)
+    sel.options.length = 0
+    var sel = document.getElementById('param_list' + id)
+    sel.options.length = 0
+    var sel = document.getElementById('service_list' + id)
+    sel.options.length = 0
   }
+  selectedTopicName = ['undefined', 'undefined']
+  selectedParamName = ['undefined', 'undefined']
+
 
   var code = {}
   for (var filename in editorSessions) {

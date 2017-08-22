@@ -312,7 +312,7 @@ app.post('/compile', function (req, res) {
   })
 
   console.log('Compiling and running code: ' + runCommand)
-  var args = [runTime, dockerID, 'davidmball/ros_online:kinetic', compilePath + tempDockerDir + '/', netID, runCommand, rosbridgePort]
+  var args = [runTime, dockerID, 'ros-online-kinetic', compilePath + tempDockerDir + '/', netID, runCommand, rosbridgePort]
   var ls = spawn('./run_docker.sh', args)
 
   // send the compilee and executable stdout/err output to the user's browserzs

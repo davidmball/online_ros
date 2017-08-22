@@ -23,6 +23,8 @@ app.controller("ListController", ["$scope", "$http", function ($scope, $http) {
 
 app.filter('remove_array', function() {
   return function(val) {
+     if (typeof val === 'undefined')
+       return ""
      var newval = JSON.stringify(val);
      var reg = newval.replace(/[\[\]"]/g, '');
      return reg;
@@ -49,11 +51,11 @@ app.filter('remove_array', function() {
             <b><span style="font-size: 1.4em; color: #0000BB;"> {{member[1].example.title | remove_array}}</span></b>
                  <i>(tags: {{member[1].example.tag | remove_array}})</i>
             <span style="float: right">{{member[1].example.ros_version | remove_array}}</span></br>
-            {{member[0].package.description | remove_array}}</br></br>
-            Packages: {{member[0].package.run_depend | remove_array}}
+            {{member[1].example.description | remove_array}}</br>
+            <span style="position: absolute; bottom: 0;">Packages: {{member[0].package.run_depend | remove_array}} {{member[0].package.depend | remove_array}}</span>
             <!-- TODO: It would be better to have each element read from member[1]
                  and displayed in a separate box -->
-            <span style="float: right; background: lightgreen;">{{member[2] | remove_array}} </span>
+            <span style="position: absolute; bottom: 0; right: 0; background: lightgreen;">{{member[2] | remove_array}} </span>
             </script>
         </div>
       </div>
