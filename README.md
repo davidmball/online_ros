@@ -23,6 +23,12 @@ Docker is required to run the example code. For the Google compute engine I use 
 sudo apt-get install docker.io
 ```
 
+Add your user to the `docker` group.
+```
+sudo usermod -a -G docker $USER
+```
+Then log out and back in in order to use docker with your user.
+
 And get the docker container.
 ```
 docker pull davidmball/ros_online:kinetic
