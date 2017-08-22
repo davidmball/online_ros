@@ -149,6 +149,11 @@ function replaceTemplates (data, name, title, description) {
   return data
 };
 
+// Redirect root to index page
+app.get('/', (req, res)=>{
+  res.redirect('/index.html')
+})
+
 /**
  * This returns the example page with the rosbridge url and port set.
  */
