@@ -1,5 +1,5 @@
 {
-  "host": "146.148.29.208",
+  "host": "35.195.230.232",
   "host_port": 80,
   "rosbridge_port": 9090,
   "example_path" : "/home/davidmichaelball/ros_examples/src/",

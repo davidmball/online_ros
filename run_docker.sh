@@ -10,7 +10,7 @@ run_cmd=$6
 external_port=$7
 
 # run the deteched docker container
-cont=$(docker run -d -p $external_port:9090 --cpus="1.0" \
+cont=$(docker run -d -p $external_port:9090 \
   -v "$ws_dir":/home/root/catkin_ws/src -w /home/root/catkin_ws/ \
   --name "$name" "$image" \
   /bin/bash -c "stdbuf -o L $run_cmd")
