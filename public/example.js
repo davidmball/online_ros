@@ -311,6 +311,8 @@ $.get('/get_files?name=' + exampleName, function (data) {
   for (var id = 0; id < 2; id++) {
     document.getElementById('tab_' + exampleInfo.example.feedback[id].tab + id).checked = true
   }
+
+  document.getElementById('run_timer').innerHTML = "Run Time: " + exampleInfo.example.time_limit + " seconds"
 })
 
 function onFileListSelect (element) { // eslint-disable-line
@@ -392,8 +394,16 @@ $('#compile').on('click', function () {
     language : codeLanguage
   }
 
+  var time_remaining = exampleInfo.example.time_limit
+  var run_countdown = setInterval(function() {
+    document.getElementById('run_timer').innerHTML = "Run Time: " + time_remaining + " seconds"
+    time_remaining = time_remaining - 1.0
+  }, 1000);
+
   $.post('/compile?name=' + exampleName, json, function (data, error, xhr) {
+    clearInterval(run_countdown)
     document.getElementById('compile').style.background = '#00FF00'
     runningCode = false
+    document.getElementById('run_timer').innerHTML = "Run Time: " + exampleInfo.example.time_limit + " seconds"
   })
 })
