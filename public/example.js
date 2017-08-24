@@ -33,7 +33,7 @@ var exampleInfo
 var ros = new ROSLIB.Ros()
 var connectedROSLIB = false
 var intervalActive = false
-var interval
+var intervalROS
 var intervalGetROSDetails
 
 var viewer
@@ -55,8 +55,8 @@ ros.on('connection', function () {
   connectedROSLIB = true
   console.log('Connected to websocket server.')
   intervalActive = false
-  clearInterval(interval)
-  intervalGetROSDetails = setInterval(getROSDetails, 250)
+  clearInterval(intervalROS)
+  intervalGetROSDetails = setInterval(getROSDetails, 1000)
 
   for (var id = 0; id < 2; id++) {
     // set the defaults from the xml file
@@ -249,6 +249,16 @@ function getROSDetails () {
 $(document).ready(function () {
   var socket = io()
   socket.on('compile_output', function (msg) {
+    if (msg.indexOf('/rosbridge_websocket') >=0)
+    {
+      console.log("here");
+      connectedROSLIB = false
+      if (!intervalActive) {
+        intervalActive = true
+        intervalROS = setInterval(tryROSConnection, 1000)
+      }
+    }
+
     for (var id = 0; id < 2; id++) {
       document.getElementById('show_terminal' + id).value += msg
       document.getElementById('show_terminal' + id).scrollTop = document.getElementById('show_terminal' + id).scrollHeight
@@ -361,11 +371,6 @@ $('#compile').on('click', function () {
   runningCode = true
 
   document.getElementById('compile').style.background = '#FF8C00'
-  connectedROSLIB = false
-  if (!intervalActive) {
-    intervalActive = true
-    interval = setInterval(tryROSConnection, 1000)
-  }
 
   for (var id = 0; id < 2; id++) {
     document.getElementById('show_terminal' + id).value = ''
@@ -398,6 +403,13 @@ $('#compile').on('click', function () {
   var run_countdown = setInterval(function() {
     document.getElementById('run_timer').innerHTML = "Run Time: " + time_remaining + " seconds"
     time_remaining = time_remaining - 1.0
+    if (time_remaining === 1)
+    {
+      connectedROSLIB = false
+      console.log('Closing connecting to ROS bridge.')
+      intervalActive = false
+      clearInterval(intervalROS)
+    }
   }, 1000);
 
   $.post('/compile?name=' + exampleName, json, function (data, error, xhr) {
