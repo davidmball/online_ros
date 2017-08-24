@@ -251,7 +251,6 @@ $(document).ready(function () {
   socket.on('compile_output', function (msg) {
     if (msg.indexOf('/rosbridge_websocket') >=0)
     {
-      console.log("here");
       connectedROSLIB = false
       if (!intervalActive) {
         intervalActive = true
