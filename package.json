@@ -20,6 +20,7 @@
     "helmet": "^3.8.0",
     "minimist": "^1.2.0",
     "node-dir": "^0.1.17",
+    "pm2": "^2.6.1",
     "socket.io": "latest",
     "unique-random-at-depth": "^1.0.0",
     "xml2js": "^0.4.17"
