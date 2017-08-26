@@ -33,6 +33,7 @@ Also, you will need npm/nodejs. Note that for the Google compute engine I had to
 ```
 sudo apt-get install nodejs
 sudo apt-get install npm
+sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
 Then install the package dependencies. Go to the online_ros directory and run
