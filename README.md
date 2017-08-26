@@ -9,8 +9,8 @@ The tutorials are located in a separate repository described below.
 
 ### Install (alpha)
 
-```
 You'll want to clone the code which runs the site and the example code into separate directories.
+
 ```
 git clone https://github.com/davidmball/online_ros.git
 git clone https://github.com/davidmball/ros_examples.git
