@@ -111,6 +111,7 @@ html,body { height:100%; }
  margin-left: 0px;
  width: 100%;
      font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  height: calc(100% - 3em)
 }
 
 .feedback select {
