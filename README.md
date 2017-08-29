@@ -9,19 +9,14 @@ The tutorials are located in a separate repository described below.
 
 ### Install (alpha)
 
-You'll need git.
-```
-sudo apt-get install git
-```
 You'll want to clone the code which runs the site and the example code into separate directories.
+
 ```
 git clone https://github.com/davidmball/online_ros.git
 git clone https://github.com/davidmball/ros_examples.git
 ```
-Docker is required to run the example code. For the Google compute engine I use docker.io.
-```
-sudo apt-get install docker.io
-```
+Docker is required to run the example code. I use docker.ce. Install it with the instructions here: 
+https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce
 
 Add your user to the `docker` group.
 ```
@@ -36,12 +31,9 @@ docker pull davidmball/online_ros:kinetic
 
 Also, you will need npm/nodejs. Note that for the Google compute engine I had to use these commands to install it.
 ```
-NODE_VERSION="v4.2.6"
-curl -LO http://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-linux-x64.tar.gz
-tar xzf node-$NODE_VERSION-linux-x64.tar.gz
-sudo cp -rp node-$NODE_VERSION-linux-x64 /usr/local/
-sudo ln -s /usr/local/node-$NODE_VERSION-linux-x64 /usr/local/node
-nodejs --version
+sudo apt-get install nodejs
+sudo apt-get install npm
+sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
 Then install the package dependencies. Go to the online_ros directory and run
