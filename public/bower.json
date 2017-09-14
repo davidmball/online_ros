@@ -1,0 +1,28 @@
+{
+  "name": "bower",
+  "homepage": "https://github.com/davidmball/online_ros",
+  "authors": [
+    "davidmball <davidmichaelball@gmail.com>"
+  ],
+  "description": "bower",
+  "main": "bower",
+  "keywords": [
+    "bower"
+  ],
+  "license": "BSD3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "y-array": "^10.1.4",
+    "y-map": "^10.1.3",
+    "y-memory": "^8.0.9",
+    "y-webrtc": "^8.0.7",
+    "y-text": "^9.5.1",
+    "y-websockets-client": "^8.0.16"
+  }
+}

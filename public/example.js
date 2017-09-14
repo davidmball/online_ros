@@ -27,6 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 var exampleInfo
 
 // ROS code
@@ -266,41 +267,86 @@ $(document).ready(function () {
 })
 
 var files = {}
-var editor = ace.edit('editor')
-editor.setTheme('ace/theme/chrome')
-editor.setPrintMarginColumn(120)
-var EditSession = ace.require('ace/edit_session').EditSession
-var editorSessions = {}
+var editor = {}
+var editorDiv = {}
+var yjs_rooms = {}
 
 var exampleName = location.search.split('name=')[1]
+var share = location.search.split('share=')[1]
+var shareString;
+if (typeof share == 'undefined') {
+  var s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  shareString = Array(8).join().split(',').map(function() { return s.charAt(Math.floor(Math.random() * s.length)); }).join('');
+} else {
+  shareString = share
+}
 
+if (document.getElementById('host_name').value == 'localhost') {
+  document.getElementById('share_link').value = document.getElementById('host_name').value + ':8080' + '/example.html?name=' + exampleName + '&share=' + shareString
+} else {
+  document.getElementById('share_link').value = document.getElementById('host_name').value + '/example.html?name=' + exampleName + '&share=' + shareString
+}
 $.get('/get_files?name=' + exampleName, function (data) {
+
   // parse the data into the files for the editor and the general example information
   var parsedData = JSON.parse(data)
   files = parsedData[0]
   exampleInfo = parsedData[1]
 
    // load each file into its own editor
+  var num = 0
   for (var filename in files) {
     var filenameExtension = filename.split('.').pop()
-    editorSessions[filename] = new EditSession(filename)
+    var formattedNumber = ("0" + num).slice(-2)
+    editor[filename] = ace.edit('editor'+formattedNumber)
+    editor[filename].$blockScrolling = 1
+    editorDiv[filename] = document.getElementById('editor'+formattedNumber)
+    num += 1
+
     if (filenameExtension === 'cpp' || filenameExtension === 'c')
-    { editorSessions[filename].setMode('ace/mode/c_cpp') }
+    { editor[filename].session.setMode('ace/mode/c_cpp') }
     else if (filenameExtension === 'xml')
-    { editorSessions[filename].setMode('ace/mode/xml') }
+    { editor[filename].session.setMode('ace/mode/xml') }
     else if (filenameExtension === 'py')
-    { editorSessions[filename].setMode('ace/mode/python')}
+    { editor[filename].session.setMode('ace/mode/python')}
     else
-    { editorSessions[filename].setMode('ace/mode/text') }
-    editorSessions[filename].setValue(files[filename], -1)
-  }
-
-   // set the initial file for editing
-   // TODO: Test if this is set / valid
-  editor.setSession(editorSessions[exampleInfo.example.language[0].start_file])
+    { editor[filename].session.setMode('ace/mode/text') }
 
 
-  // MAke a list of the languages
+
+    if (filename === '/CMakeLists.txt' || filename === '/package.xml') {
+      editor[filename].setReadOnly(true)
+    } else {
+      editor[filename].setReadOnly(false)
+
+      yjs_rooms[filename] = new Promise((resolve) => {
+        Y({
+          db: {
+            name: 'memory',
+            namespace: 'ace-example' + filename
+          },
+          connector: {
+            name: 'websockets-client',
+            room: shareString + filename,
+            url: 'http://' + document.getElementById('host_name').value + ':1234',
+            filename: filename
+          },
+          sourceDir: '/bower_components',
+          share: {
+            ace: 'Text' // y.share.textarea is of type Y.Text
+          }
+        }).then(function (y) {
+         y.share.ace.bindAce(editor[y.options.connector.filename])
+         if (typeof share === 'undefined')
+           editor[y.options.connector.filename].session.setValue(files[y.options.connector.filename], -1)
+         resolve(y)
+        });
+      });
+    }
+  } // for filename in files
+  editorDiv[exampleInfo.example.language[0].start_file].style.display = 'block'
+
+  // Make a list of the languages
   var sel = document.getElementById('language_list')
   sel.options.length = 0
   for (var lang in exampleInfo.example.language) {
@@ -326,12 +372,10 @@ $.get('/get_files?name=' + exampleName, function (data) {
 
 function onFileListSelect (element) { // eslint-disable-line
   var selValue = element.value
-  editor.setSession(editorSessions[selValue])
-  if (selValue === 'CMakeLists.txt' || selValue === 'package.xml') {
-    editor.setReadOnly(true)
-  } else {
-    editor.setReadOnly(false)
+  for (filename in editorDiv) {
+    editorDiv[filename].style.display = 'none'
   }
+  editorDiv[selValue].style.display = 'block'
 }
 
 function setFileList(language, langID) {
@@ -357,7 +401,10 @@ function onLanguageSelect (element) { // eslint-disable-line
   {
     if (codeLanguage === exampleInfo.example.language[lang].name[0]) {
       document.getElementById('run_cmd').innerHTML = exampleInfo.example.language[lang].run_cmd
-      editor.setSession(editorSessions[exampleInfo.example.language[lang].start_file])
+      for (filename in editorDiv) {
+        editorDiv[filename].style.display = 'none'
+      }
+      editorDiv[exampleInfo.example.language[lang].start_file].style.display = 'block'
       setFileList(codeLanguage, lang)
     }
   }
@@ -388,8 +435,8 @@ $('#compile').on('click', function () {
 
 
   var code = {}
-  for (var filename in editorSessions) {
-    code[filename] = editorSessions[filename].getValue()
+  for (var filename in editor) {
+    code[filename] = editor[filename].session.getValue()
   }
 
   var json = {
