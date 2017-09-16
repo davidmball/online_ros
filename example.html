@@ -22,16 +22,46 @@
     Files: <select name="files" id="file_list" size="1" onchange="onFileListSelect(this);"></select>
   </div>
 
-  <div id="editor"></div>
+  <div id="editor00" style="display: none;" class="editor"></div>
+  <div id="editor01" style="display: none;" class="editor"></div>
+  <div id="editor02" style="display: none;" class="editor"></div>
+  <div id="editor03" style="display: none;" class="editor"></div>
+  <div id="editor04" style="display: none;" class="editor"></div>
+  <div id="editor05" style="display: none;" class="editor"></div>
+  <div id="editor06" style="display: none;" class="editor"></div>
+  <div id="editor07" style="display: none;" class="editor"></div>
+  <div id="editor08" style="display: none;" class="editor"></div>
+  <div id="editor09" style="display: none;" class="editor"></div>
+  <div id="editor10" style="display: none;" class="editor"></div>
+  <div id="editor11" style="display: none;" class="editor"></div>
+  <div id="editor12" style="display: none;" class="editor"></div>
+  <div id="editor13" style="display: none;" class="editor"></div>
+  <div id="editor14" style="display: none;" class="editor"></div>
+  <div id="editor15" style="display: none;" class="editor"></div>
+  <div id="editor16" style="display: none;" class="editor"></div>
+  <div id="editor17" style="display: none;" class="editor"></div>
+  <div id="editor18" style="display: none;" class="editor"></div>
+  <div id="editor19" style="display: none;" class="editor"></div>
+  <div id="editor20" style="display: none;" class="editor"></div>
+  <div id="editor21" style="display: none;" class="editor"></div>
+  <div id="editor22" style="display: none;" class="editor"></div>
+  <div id="editor23" style="display: none;" class="editor"></div>
+  <div id="editor24" style="display: none;" class="editor"></div>
+  <div id="editor25" style="display: none;" class="editor"></div>
+  <div id="editor26" style="display: none;" class="editor"></div>
+  <div id="editor27" style="display: none;" class="editor"></div>
+  <div id="editor28" style="display: none;" class="editor"></div>
+  <div id="editor29" style="display: none;" class="editor"></div>
 
-  <div id="main_footer">
+    <div id="main_footer">
     <div style="float: left; padding-right: 10px;">
-      <select name="languages" id="language_list" size="2" onchange="onLanguageSelect(this);"></select>
+      <select name="languages" id="language_list" size="4" onchange="onLanguageSelect(this);"></select>
     </div>
     <div>
       <input type="button" value="Compile & Run" id="compile"> <span id="run_timer"></div>
-      
-      <span style="display: inline-block; padding-top: 4px;">Cmd: <b id="run_cmd"></b></span>
+
+      <span style="display: inline-block; padding-top: 2px;">Cmd: <b id="run_cmd"></b></span>
+      <span style="display: block; padding-top: 4px;">Share link: <input id="share_link" onClick="this.setSelectionRange(0, this.value.length)" rows="1" readonly="readonly" style="padding-top: resize: none; white-space: nowrap; height:15px; overflow:hidden; width: 65%; font-size: 12px" /></span>
     </div>
   </div>
 </div>
@@ -108,6 +138,7 @@
   </div>
 </div>
 
+<script src="/bower_components/yjs/y.js"></script>
 <script type='text/javascript' src='example.js'></script>
 
 {{html_footer}}
