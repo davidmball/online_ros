@@ -15,7 +15,7 @@ You'll want to clone the code which runs the site and the example code into sepa
 git clone https://github.com/davidmball/online_ros.git
 git clone https://github.com/davidmball/ros_examples.git
 ```
-Docker is required to run the example code. I use docker.ce. Install it with the instructions here: 
+Docker is required to run the example code. I use docker.ce. Install it with the instructions here:
 https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce
 
 Add your user to the `docker` group.
@@ -39,6 +39,7 @@ sudo ln -s /usr/bin/nodejs /usr/bin/node
 Then install the package dependencies. Go to the online_ros directory and run
 ```
 npm install
+bower install
 ```
 
 ### Running

@@ -275,8 +275,8 @@ var exampleName = location.search.split('name=')[1]
 var share = location.search.split('share=')[1]
 var shareString;
 if (typeof share == 'undefined') {
-  var s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  shareString = Array(8).join().split(',').map(function() { return s.charAt(Math.floor(Math.random() * s.length)); }).join('');
+  var s = "abcdefghijklmnopqrstuvwxyz0123456789";
+  shareString = Array(6).join().split(',').map(function() { return s.charAt(Math.floor(Math.random() * s.length)); }).join('');
 } else {
   shareString = share
 }
