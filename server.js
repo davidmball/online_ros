@@ -79,6 +79,10 @@ fs.readFile('html_head.html', 'utf8', function (err, data) {
   if (err) throw err
   htmlHeadFile = data
 })
+fs.readFile('html_googleanalytics.html', 'utf8', function (err, data) {
+  if (err) throw err
+  htmlGoogleAnalyticsFile = data
+})
 
 /**
  * Runs at the start to read, process and store all of the example files.
@@ -132,6 +136,12 @@ function replaceTemplates (data, name, title, description) {
   data = data.toString().replace(/\{\{html_footer\}\}/g, htmlFooterFile)
   data = data.toString().replace(/\{\{html_header\}\}/g, htmlHeaderFile)
   data = data.toString().replace(/\{\{html_head\}\}/g, htmlHeadFile)
+
+  if (process.env.NODE_ENV === 'production') {
+      data = data.toString().replace(/\{\{google_analytics\}\}/g, htmlGoogleAnalyticsFile)
+  } else {
+      data = data.toString().replace(/\{\{google_analytics\}\}/g, '')
+  }
 
   // Set the title and description which is what google uses for search results.
   const siteTitle = 'Online ROS'
