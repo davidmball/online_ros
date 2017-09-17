@@ -28,6 +28,7 @@
  */
 
 const http = require('http')
+const https = require('https')
 const fs = require('fs-extra')
 const express = require('express')
 const io = require('socket.io')(http)
@@ -40,6 +41,14 @@ const helmet = require('helmet')
 const uniqueRandomAtDepth = require('unique-random-at-depth')
 const path = require('path')
 const stream = require('tailing-stream')
+
+var options
+if (process.env.NODE_ENV === 'production') {
+  options = {
+    key: fs.readFileSync('/etc/letsencrypt/live/www.onlineros.com/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/www.onlineros.com/fullchain.pem')
+  }
+}
 
 var app = express()
 app.use(helmet())
@@ -272,11 +281,13 @@ app.get('/get_example_list', function (req, res) {
   res.send(exampleList)
 })
 
-var server = app.listen(hostPort, function () {
-  console.log('Online ROS listening on port: %s', server.address().port)
-})
+var http_server = http.createServer(app).listen(hostPort)
+var https_server
+if (process.env.NODE_ENV === 'production') {
+  https_server = https.createServer(options, app).listen(443)
+}
 
-io.listen(server)
+io.listen(http_server)
 
 /**
  * Takes the code files from the user, compiles and runs them in a docker container,
