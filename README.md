@@ -42,21 +42,35 @@ npm install
 bower install
 ```
 
+The Yjs server is needed. Install with
+```
+npm install -g y-websockets-server
+```
+
 ### Running
 
-Set the correct configuration to either production or development. You should edit the development config file to suit your system.
-```
-export NODE_ENV=production
-```
+#### Locally
 
-Then run locally with:
+You should edit the development config file to suit your system.
+
+Run with:
 ```
 nodemon -e js,html server.js
 ```
-Or on a production system at the moment to get access to port 80.
+and in another terminal
 ```
-sudo -E bash -c '/usr/local/node/bin/node server.js'
+y-websockets-server
 ```
+
+#### Online
+
+Set the node environment to production. You should edit the production config file to suit your system.
+```
+export NODE_ENV=production
+```
+On a production system I use pm2 to run both the online_ros site and y-websockets-server. I had to fiddle to give them access to port 80 and 443. I also have a cron job to, among other tasks, reset everything once a week.
+
+### Docker container
 
 The docker container is built automatically when there is a change to the dockerfile on master in github.
 
