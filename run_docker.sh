@@ -15,7 +15,7 @@ cont=$(docker run -d -p $external_port:9090 \
   --name "$name" "$image" \
   /bin/bash -c "stdbuf -o L $run_cmd")
 # stream stdout outside the containter
-docker logs --follow "$name" &
+docker logs --follow "$name" >& $ws_dir/stdouterr.txt &
 # timeout the docker containter if it runs too long
 code=$(timeout "$to" docker wait "$cont" || true)
 # kill the docker containter

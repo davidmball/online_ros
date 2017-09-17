@@ -39,6 +39,7 @@ const parseString = require('xml2js').parseString
 const helmet = require('helmet')
 const uniqueRandomAtDepth = require('unique-random-at-depth')
 const path = require('path')
+const stream = require('tailing-stream')
 
 var app = express()
 app.use(helmet())
@@ -326,27 +327,24 @@ app.post('/compile', function (req, res) {
     runTime = result.example.time_limit
   })
 
+  fs.outputFileSync(compilePath + tempDockerDir + '/' + 'stdouterr.txt', '')
+  var readStream = stream.createReadStream(compilePath + tempDockerDir + '/' + 'stdouterr.txt', {encoding: 'utf8', timeout: 30000, interval: 10})
+
   console.log('Compiling and running code: ' + runCommand)
   var args = [runTime, dockerID, 'davidmball/online_ros:kinetic', compilePath + tempDockerDir + '/', netID, runCommand, rosbridgePort]
   var ls = spawn('./run_docker.sh', args)
 
-  // send the compilee and executable stdout/err output to the user's browserzs
-  ls.stdout.on('data', (data) => {
-    // console.log(`stdout: ${data}`);
-    // TODO: Actually it would be great if the text was rendered in colour in the html page
-    var dataString = data.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
+  readStream.on('data', chunk => {
+    // TODO: It would be great to keep the coloured output.
+    var dataString = chunk.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
     io.emit('compile_output', dataString)
   })
-
-  ls.stderr.on('data', (data) => {
-    // console.log(`stderr: ${data}`);
-    var dataString = data.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
-    io.emit('compile_output', dataString)
-  })
+  // quietly handle the error when deleting the file before the stream timeouts
+  readStream.on('error', function() {})
 
   // end this post request
   ls.on('close', (code) => {
-    // console.log(`child process exited with code ${code}`);
+    fs.removeSync(compilePath + tempDockerDir + '/' + 'stdouterr.txt')
     fs.removeSync(compilePath + tempDockerDir)
     res.end('true')
   })
