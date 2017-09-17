@@ -32,7 +32,6 @@ docker pull davidmball/online_ros:kinetic
 Also, you will need npm/nodejs. Note that for the Google compute engine I had to use these commands to install it.
 ```
 sudo apt-get install nodejs
-sudo apt-get install npm
 sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
