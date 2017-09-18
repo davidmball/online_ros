@@ -53,7 +53,7 @@
 
     <div id="main_footer">
     <div style="float: left; padding-right: 10px;">
-      <select name="languages" id="language_list" size="4" onchange="onLanguageSelect(this);"></select>
+      <select name="languages" id="language_list" size="4" style="overflow-y: hidden;" onchange="onLanguageSelect(this);"></select>
     </div>
     <div>
       <input type="button" value="Compile & Run" id="compile"> <span id="run_timer"></div>
@@ -85,7 +85,7 @@
       <select name="services" id="service_list0" size="1" onchange="onServiceListSelect(this);"></select>
     </div>
     <div class="tab0">
-       <select name="nodes" id="node_list0" size="1" onchange="onNodeListSelect(this);"></select>
+       <select name="nodes" id="node_list0" size="10" onchange="onNodeListSelect(this);" style="margin-top: 10px;"></select>
     </div>
     <div class="tab0">
        <select name="params" id="param_list0" size="1" onchange="onParamListSelect(this);"></select>
@@ -120,7 +120,7 @@
       <select name="services" id="service_list1" size="1" onchange="onServiceListSelect(this);"></select>
     </div>
     <div class="tab1">
-       <select name="nodes" id="node_list1" size="1" onchange="onNodeListSelect(this);"></select>
+       <select name="nodes" id="node_list1" size="10" onchange="onNodeListSelect(this);" style="margin-top: 10px;"></select>
     </div>
     <div class="tab1">
        <select name="params" id="param_list1" size="1" onchange="onParamListSelect(this);"></select>
