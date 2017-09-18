@@ -316,6 +316,7 @@ $.get('/get_files?name=' + exampleName, function (data) {
 
     if (filename === '/CMakeLists.txt' || filename === '/package.xml') {
       editor[filename].setReadOnly(true)
+      editor[filename].session.setValue(files[filename], -1)
     } else {
       editor[filename].setReadOnly(false)
 
