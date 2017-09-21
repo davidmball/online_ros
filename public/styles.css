@@ -8,6 +8,7 @@ html,body { height:100%; }
   top: 0; /* Position the navbar at the top of the page */
   width: 100%; /* Full width */
   font-size: 14px;
+  z-index: 15;
 }
 
 #title {
@@ -262,12 +263,13 @@ footer {
   width: 100%;
   height: 40px;
   background-color: 0xFAFAFA;
+  z-index: 1;
 }
 
 .about_contribute {
   position: absolute;
   width: 800px;
-  z-index: 15;
+  z-index: 0;
   left: 50%;
   margin: 100px 0 0 -420px;
   background-color: #FFFFFF;
