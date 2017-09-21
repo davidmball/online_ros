@@ -299,6 +299,8 @@ $.get('/get_files?name=' + exampleName, function (data) {
     var filenameExtension = filename.split('.').pop()
     var formattedNumber = ("0" + num).slice(-2)
     editor[filename] = ace.edit('editor'+formattedNumber)
+    editor[filename].setTheme('ace/theme/chrome')
+    editor[filename].setPrintMarginColumn(120)
     editor[filename].$blockScrolling = 1
     editorDiv[filename] = document.getElementById('editor'+formattedNumber)
     num += 1
