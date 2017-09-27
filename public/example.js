@@ -249,7 +249,8 @@ function getROSDetails () {
  */
 $(document).ready(function () {
   var socket = io()
-  socket.on('compile_output', function (msg) {
+  var port = document.getElementById('rosbridge_port').value
+  socket.on('compile_output' + port, function (msg) {
     if (msg.indexOf('/rosbridge_websocket') >=0)
     {
       connectedROSLIB = false
@@ -257,11 +258,12 @@ $(document).ready(function () {
         intervalActive = true
         intervalROS = setInterval(tryROSConnection, 1000)
       }
-    }
+    } else {
 
-    for (var id = 0; id < 2; id++) {
-      document.getElementById('show_terminal' + id).value += msg
-      document.getElementById('show_terminal' + id).scrollTop = document.getElementById('show_terminal' + id).scrollHeight
+      for (var id = 0; id < 2; id++) {
+        document.getElementById('show_terminal' + id).value += msg
+        document.getElementById('show_terminal' + id).scrollTop = document.getElementById('show_terminal' + id).scrollHeight
+      }
     }
   })
 })

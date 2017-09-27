@@ -348,7 +348,7 @@ app.post('/compile', function (req, res) {
   readStream.on('data', chunk => {
     // TODO: It would be great to keep the coloured output.
     var dataString = chunk.toString().replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
-    io.emit('compile_output', dataString)
+    io.emit('compile_output' + rosbridgePort, dataString)
   })
   // quietly handle the error when deleting the file before the stream timeouts
   readStream.on('error', function() {})
