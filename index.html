@@ -5,31 +5,24 @@
   <body>
 
 <script type='text/javascript'>
+function search() {
+  // Declare variables
+  var input, filter, ul, li, a, i;
+  input = document.getElementById('searchbox');
+  filter = input.value.toUpperCase();
+  cards = document.getElementsByClassName('card');
 
-var app = angular.module("app", []);
-app.controller("ListController", ["$scope", "$http", function ($scope, $http) {
-
-      $http.get('/get_example_list')
-      .then(
-      function (response) {
-        //console.log(response.data);
-          $scope.Members = response.data;
-      },
-      function (response) {
-        //console.log("failure");
-      }
-  );
-}]);
-
-app.filter('remove_array', function() {
-  return function(val) {
-     if (typeof val === 'undefined')
-       return ""
-     var newval = JSON.stringify(val);
-     var reg = newval.replace(/[\[\]"]/g, '');
-     return reg;
-  };
-});
+  // Loop through all items, and hide those who don't match the search query
+  for (i = 0; i < cards.length; i++) {
+    b = cards[i].getElementsByTagName("b")[0];
+    italics = cards[i].getElementsByTagName("i")[0];
+    if (b.innerHTML.toUpperCase().indexOf(filter) > -1 || italics.innerHTML.toUpperCase().indexOf(filter) > -1) {
+      cards[i].style.display = "";
+    } else {
+      cards[i].style.display = "none";
+    }
+  }
+}
 
 </script>
 
@@ -38,31 +31,18 @@ app.filter('remove_array', function() {
   <div id="index_intro_text">
     View, edit, compile and run ROS example code in your browser for free.</br>
   </div>
-  <div ng-app="app" ng-controller="ListController">
-
     <div id="searchbox_div">
-      <input id="searchbox" type="text" placeholder="Search for examples here..." ng-model="allKeyword" />
+  <input type="text" id="searchbox" onkeyup="search()" placeholder="Search for examples here...">
     </div>
-    </br>
-    <hr>
-      <div ng-repeat="member in Members | filter: allKeyword">
-        <div class="card">
-            <a href="example.html?name={{member[0].package.name | remove_array}}"><span class="link-spanner"></span></a>
-            <b><span style="font-size: 1.4em; color: #0000BB;"> {{member[1].example.title | remove_array}}</span></b>
-                 <i>(tags: {{member[1].example.tag | remove_array}})</i>
-            <span style="float: right">{{member[1].example.ros_version | remove_array}}</span></br>
-            {{member[1].example.description | remove_array}}</br>
-            <span style="position: absolute; bottom: 0;">Packages: {{member[0].package.run_depend | remove_array}} {{member[0].package.depend | remove_array}}</span>
-            <!-- TODO: It would be better to have each element read from member[1]
-                 and displayed in a separate box -->
-            <span style="position: absolute; bottom: 0; right: 0; background: lightgreen;">{{member[2] | remove_array}} </span>
-            </script>
-        </div>
-      </div>
-      <br>
-      <br>
-      <br>
-   {{html_footer}}
+  </br>
+  <hr>
+
+{{example_list}}
+
+    <br>
+    <br>
+    <br>
+    {{html_footer}}
   </body>
 
 </html>
