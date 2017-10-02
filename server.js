@@ -142,6 +142,34 @@ io.on('connection', function (socket) {
   console.log('a user connected')
 })
 
+function filter(val) {
+  if (typeof val === 'undefined')
+    return ""
+  else
+    return val
+
+}
+
+function getIndexList()
+{
+  data = "";
+  for (i = 0; i < exampleList.length; i++)
+  {
+    // TODO: Clean up this div using a style sheet, etc
+    data += "<div class=\"card\">"
+    data += "<a href=\"example.html?name=" + exampleList[i][0].package.name + "\"><span class=\"link-spanner\"></span></a>\n"
+    data += "<b><span style=\"font-size: 1.4em; color: #0000BB;\">" + exampleList[i][1].example.title + " </span></b>\n"
+    data += "<i>(tags: " + exampleList[i][1].example.tag + ")</i>\n"
+    data += "<span style=\"float: right\">" + exampleList[i][1].example.ros_version + "</span></br>"
+    data += exampleList[i][1].example.description + "</br>\n"
+    data += "<span style=\"position: absolute; bottom: 0;\">Packages: " + filter(exampleList[i][0].package.run_depend) + " " + filter(exampleList[i][0].package.depend) + "</span>\n"
+    data += "<span style=\"position: absolute; bottom: 0; right: 0; background: lightgreen;\">" + filter(exampleList[i][2]) + "</span>\n"
+    data += "</div>\n\n"
+  }
+
+  return data;
+}
+
 function replaceTemplates (data, name, title, description) {
   data = data.toString().replace(/\{\{html_footer\}\}/g, htmlFooterFile)
   data = data.toString().replace(/\{\{html_header\}\}/g, htmlHeaderFile)
@@ -164,6 +192,10 @@ function replaceTemplates (data, name, title, description) {
     if (name === '/contribute.html') { data = data.toString().replace(/\{\{title\}\}/g, siteTitle + ' - Contribute') }
 
     data = data.toString().replace(/\{\{description\}\}/g, 'View, edit, compile and run ROS examples in your browser for free.')
+  }
+
+  if (name === '/index.html') {
+    data = data.toString().replace(/\{\{example_list\}\}/g, getIndexList())
   }
 
   return data
