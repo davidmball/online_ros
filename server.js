@@ -306,12 +306,6 @@ app.get('/get_files', function (req, res) {
   res.send(JSON.stringify([exampleFiles, resultXML]))
 })
 
-/**
- * The index page calls this to get a list of all the files.
- */
-app.get('/get_example_list', function (req, res) {
-  res.send(exampleList)
-})
 
 var http_server = http.createServer(app).listen(hostPort)
 var https_server
